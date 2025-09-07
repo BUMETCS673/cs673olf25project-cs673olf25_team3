@@ -9,3 +9,7 @@ Haolin Yang
 Donjay Barit
 
 ```I received my Bachelors of Science degree in Electrical and Computer Engineering from Seattle University. I'm currently pursuing a Masters of Science in Software Development at Boston University. My software background is in both front and backend development for web and mobile applications, with a primary focus on the MERN stack.```
+
+Ashley Sachdeva
+
+```I received my Bachelors of Science degree in Computer Science and Minor in Mathematics at Boston College. I'm currently pursuing a Masters of Science in Computer Science at Boston University. I have worked as software engineer for 5 years primarly with front end development. I also have a passion for accessible websites and applications```
