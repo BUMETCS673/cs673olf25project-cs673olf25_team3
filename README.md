@@ -27,10 +27,27 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
 *(Coming soon — setup instructions will go here once the codebase is ready.)*
 ---
 
-## Roadmap
-- Add event reminders and notifications  
-- Support group chats for each plan  
-- Enable calendar integration  
+## Essential Roadmap
+- Application (front end and backend) up
+- User Authentication
+- Friend Requests
+- Have people be able to create plans
+- Filter plans by type
+- Invitees can RSVP
+
+## Desirable Roadmap
+- User Profile Management
+- Plan Editing and Deletion
+- Notifications for new plans
+- Dismissing Plans
+- Notifications for RSVPs
+
+## Optional Roadmap
+- Calendar Integration for own plans
+- Plan Suggestions Based on Interests
+- Calendar Integration for RSVP’d plans
+
+
 
 ---
 
