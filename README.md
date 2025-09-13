@@ -24,7 +24,33 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
 
 ## Project Setup and Run Guide
 
-*(Coming soon — setup instructions will go here once the codebase is ready.)*
+### System Requirements
+
+This project requires the following to run properly:
+
+- **Node:** version 20.19 or higher
+
+### Frontend Development 
+
+The frontend is built using the React framework with Vite build tool.
+
+#### Setting Up The Frontend
+
+All frontend development should be done in the `frontend/` directory.
+
+1. Install dependencies within the `frontend` directory.
+```
+cd frontend
+npm install
+```
+
+#### Running the Frontend
+
+To run the frontend locally, run the following command:
+```
+npm run dev
+```
+
 ---
 
 ## Essential Roadmap
