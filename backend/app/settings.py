@@ -9,24 +9,33 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
+import dotenv
 from pathlib import Path
+
+# Load environment variables from .env file
+dotenv.load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-zhniqd4jo59)renh&#(*2j@g(^n+uyta6b2a+y@ybu*-frbeab'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
+# Get the value from the .env file and split it into a list
+# Use .get() with a default value to prevent errors if the variable isn't set
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
+# If the list is empty (e.g., if ALLOWED_HOSTS was empty in the .env file),
+# a single empty string will be returned. The following line handles this.
+if not any(ALLOWED_HOSTS):
+    ALLOWED_HOSTS = []
 
 # Application definition
 

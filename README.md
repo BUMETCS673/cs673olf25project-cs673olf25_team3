@@ -91,20 +91,42 @@ When installing new packages, update the `requirements.txt` with the following:
 pip freeze > requirements.txt
 ```
 
-4.  Update the database table
+4. Setup the environment variables
+
+In the `backend` directory, copy the contents in the `.env.example` file into a new `.env` file. 
+
+Then generate a new Django `SECRET KEY` with the following commands:
+```
+python manage.py shell
+from django.core.management.utils import get_random_secret_key
+get_random_secret_key()
+```
+
+Copy the generated key into the `.env` file.
+
+```
+...
+SECRET_KEY=your_django_secret_key_here
+
+...
+```
+
+5.  Update the database table
 
 ```
 python manage.py migrate
 ```
 
+
 #### Running the Backend
 
-To run the backend locally
+To run the backend locally, run the following command:
 
 ```
 python manage.py runserver
 ```
 
+The django application should be accessible through the endpoint `http://localhost:8000`.
 
 ---
 
