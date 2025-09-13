@@ -24,6 +24,12 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
 
 ## Project Setup and Run Guide
 
+### System Requirements
+
+This project requires the following to run properly:
+
+- **Python:** version 3.10 or higher
+
 ### Backend Development 
 
 The backend is built using the Django framework. 
@@ -74,7 +80,7 @@ source .venv/bin/activate
 3. Install the dependencies
 
 ```
-pip install -r requirements.trxt
+pip install -r requirements.txt
 ```
 
 *Note:* 
@@ -85,7 +91,14 @@ When installing new packages, update the `requirements.txt` with the following:
 pip freeze > requirements.txt
 ```
 
-#### 
+4.  Update the database table
+
+```
+python manage.py migrate
+```
+
+#### Running the Backend
+
 To run the backend locally
 
 ```
