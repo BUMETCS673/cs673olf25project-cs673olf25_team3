@@ -28,7 +28,29 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
 
 This project requires the following to run properly:
 
+- **Node:** version 20.19 or higher
 - **Python:** version 3.10 or higher
+
+### Frontend Development 
+
+The frontend is built using the React framework with Vite build tool.
+
+#### Setting Up The Frontend
+
+All frontend development should be done in the `frontend/` directory.
+
+1. Install dependencies within the `frontend` directory.
+```
+cd frontend
+npm install
+```
+
+#### Running the Frontend
+
+To run the frontend locally, run the following command:
+```
+npm run dev
+```
 
 ### Backend Development 
 
@@ -53,8 +75,6 @@ The backend is built using the Django framework.
 ├── manage.py
 └── requriements.txt    # dependency packages
 └── .venv/
-
-
 ```
 
 #### Setting Up The Backend 
