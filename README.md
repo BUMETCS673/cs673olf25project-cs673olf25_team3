@@ -29,6 +29,7 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
 This project requires the following to run properly:
 
 - **Node:** version 20.19 or higher
+- **Python:** version 3.10 or higher
 
 ### Frontend Development 
 
@@ -50,6 +51,102 @@ To run the frontend locally, run the following command:
 ```
 npm run dev
 ```
+
+### Backend Development 
+
+The backend is built using the Django framework. 
+
+**Backend structure:**
+```
+├── app/                # the core django framework
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── api/                # the api application
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── migrations/
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── manage.py
+└── requriements.txt    # dependency packages
+└── .venv/
+```
+
+#### Setting Up The Backend 
+All backend development should be done in the `backend/` directory. To setup the backend:
+
+1. Create a python virtual environment in the backend directory
+
+```
+cd backend
+python -m venv .venv
+```
+
+2. Activate the `venv`
+
+```
+# for macOS or Linux
+source .venv/bin/activate
+
+# for Windows
+.venv\Scripts\activate
+```
+
+3. Install the dependencies
+
+```
+pip install -r requirements.txt
+```
+
+*Note:* 
+
+When installing new packages, update the `requirements.txt` with the following:
+
+```
+pip freeze > requirements.txt
+```
+
+4. Setup the environment variables
+
+In the `backend` directory, copy the contents in the `.env.example` file into a new `.env` file. 
+
+Then generate a new Django `SECRET KEY` with the following commands:
+```
+python manage.py shell
+from django.core.management.utils import get_random_secret_key
+get_random_secret_key()
+```
+
+Copy the generated key into the `.env` file.
+
+```
+...
+SECRET_KEY=your_django_secret_key_here
+
+...
+```
+
+5.  Update the database table
+
+```
+python manage.py migrate
+```
+
+
+#### Running the Backend
+
+To run the backend locally, run the following command:
+
+```
+python manage.py runserver
+```
+
+The django application should be accessible through the endpoint `http://localhost:8000`.
 
 ---
 

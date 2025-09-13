@@ -1,0 +1,9 @@
+asgiref==3.9.1
+dataclasses==0.6
+Django==5.2.6
+djangorestframework==3.16.1
+djongo==1.2.31
+dnspython==2.8.0
+pymongo==4.15.0
+python-dotenv==1.1.1
+sqlparse==0.5.3
