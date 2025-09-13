@@ -24,7 +24,75 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
 
 ## Project Setup and Run Guide
 
-*(Coming soon — setup instructions will go here once the codebase is ready.)*
+### Backend Development 
+
+The backend is built using the Django framework. 
+
+**Backend structure:**
+```
+├── app/                # the core django framework
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── api/                # the api application
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── migrations/
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── manage.py
+└── requriements.txt    # dependency packages
+└── .venv/
+
+
+```
+
+#### Setting Up The Backend 
+All backend development should be done in the `backend/` directory. To setup the backend:
+
+1. Create a python virtual environment in the backend directory
+
+```
+cd backend
+python -m venv .venv
+```
+
+2. Activate the `venv`
+
+```
+# for macOS or Linux
+source .venv/bin/activate
+
+# for Windows
+.venv\Scripts\activate
+```
+
+3. Install the dependencies
+
+```
+pip install -r requirements.trxt
+```
+
+*Note:* 
+
+When installing new packages, update the `requirements.txt` with the following:
+
+```
+pip freeze > requirements.txt
+```
+
+#### 
+To run the backend locally
+
+```
+python manage.py runserver
+```
+
+
 ---
 
 ## Essential Roadmap
