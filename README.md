@@ -174,6 +174,39 @@ After the services are up and running, you can access the applications at the fo
 
 - Frontend (Vite/React): http://localhost:5173
 
+#### Running Docker Containers Separately
+
+While `docker-compose` is designed for managing multiple services at once, `docker run` is used to create and start a single container. 
+
+Either the frontend or backend can be run independently using the `docker run` command to build and run the container from the `Dockerfile` configured in their respective directory. 
+
+**Running the Frontend**
+
+To run the frontend, first build the container with the following
+```
+docker build -t planningjam-frontend ./frontend
+```
+
+and then run it with
+```
+docker run -d --name planningjam-frontend -p 5173:5173 planningjam-frontend
+```
+The application should then be accessible at http://localhost:5173 .
+
+**Running the Backend**
+
+To run the backend, first build the container with the following
+```
+docker build -t planningjam-backend ./backend
+```
+
+and then run it with
+```
+docker run -d --name planningjam-backend -p 5173:5173 planningjam-backend
+```
+
+The application should then be accessible at http://localhost:8000 .
+
 ---
 
 ## Essential Roadmap
