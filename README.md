@@ -131,12 +131,31 @@ SECRET_KEY=your_django_secret_key_here
 ...
 ```
 
-5.  Update the database table
+#### Setting Up MongoDB With The Backend
+
+1. Configure the MongoDB Connection
+
+In the `.env` file, add the MongoDB host connection URL
+
+i.e. 
+```
+MONGO_HOST=mongodb://user:password@localhost:27017/database_name
+```
+
+2. Verify the connection is working by running the server. 
 
 ```
 python manage.py migrate
 ```
 
+##### Database Migration
+
+After creating new model in the application, create a migration for the model.
+```
+python manage.py makemigrations <app_name>
+python manage.py migrate
+```
+For the api application, set the `app_name` to api
 
 #### Running the Backend
 
