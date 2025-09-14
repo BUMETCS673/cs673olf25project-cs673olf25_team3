@@ -196,27 +196,30 @@ The django application should be accessible through the endpoint `http://localho
 
 The `database/` directory contains a docker-compose file to build a MongoDB docker container. 
 
-Before running the docker file, create a `.env` file in the `database/` directory and copy the contents from the `.env.example`. 
+To install a MongoDB database:
+1. Before running the docker file, create a `.env` file in the `database/` directory and copy the contents from the `.env.example`. 
 
-Enter a root user and a root password for the MongoDB application. Modify the port if the port is already in use.
-```
-MONGO_ROOT_USER=enter_a_root_user
-MONGO_ROOT_PASSWORD=enter_a_root_password
-MONGO_PORT=27017
-```
+    Enter a root user and a root password for the MongoDB application. Modify the port if the port is already in use.
+    ```
+    MONGO_ROOT_USER=enter_a_root_user
+    MONGO_ROOT_PASSWORD=enter_a_root_password
+    MONGO_PORT=27017
+    ```
 
-Run the `docker-compose` command in this directory to build the container:
-```script
-cd database
-docker-compose -p planningjam_database up -d
-```
-This will create a Docker container called `planningjam_database` and build a mongodb service. 
+2. Run the following to create a Docker network if not already created:
+    ```
+    docker network create planjam-network
+    ```
+    This will create the network `planjam-network`, allowing other containers in the same network to communicate with each other. 
 
-Run the following to create a Docker network if not already created:
-```
-docker network create planjam-network
-```
-This will create the network `planjam-network`, allowing other containers in the same network to communicate with each other. 
+
+3. Run the `docker-compose` command in this directory to build the container:
+    ```script
+    cd database
+    docker-compose -p planningjam_database up -d
+    ```
+    This will create a Docker container called `planningjam_database` and build a mongodb service. 
+
 
 #### Creating the Database
 
