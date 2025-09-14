@@ -148,6 +148,32 @@ python manage.py runserver
 
 The django application should be accessible through the endpoint `http://localhost:8000`.
 
+### Docker
+
+The frontend and backend for this project can be run using dockerized containers. Before beginning, ensure the following are installed:
+
+- **Docker** - [https://www.docker.com/](https://www.docker.com/)
+- **Docker Compose**
+
+#### Getting Started
+
+From the project's root directory run the following command
+```
+docker-compose -p planningjam up --build
+```
+This command creates a new docker project called `planningjam` and creates container images for the frontend (django) and backend (react) application's services.
+
+To run the container in the background, use the -d (detached) flag:
+```
+docker-compose -p planningjam up --build -d
+```
+
+After the services are up and running, you can access the applications at the following URLs:
+
+- Backend (Django): http://localhost:8000
+
+- Frontend (Vite/React): http://localhost:5173
+
 ---
 
 ## Essential Roadmap
