@@ -167,6 +167,113 @@ python manage.py runserver
 
 The django application should be accessible through the endpoint `http://localhost:8000`.
 
+### Database
+
+#### Installing a local MongoDB with Docker
+
+The `database/` directory contains a docker-compose file to build a MongoDB docker container. 
+
+Before running the docker file, create a `.env` file in the `database/` directory and copy the contents from the `.env.example`. 
+
+Enter a root user and a root password for the MongoDB application. Modify the port if the port is already in use.
+```
+MONGO_ROOT_USER=enter_a_root_user
+MONGO_ROOT_PASSWORD=enter_a_root_password
+MONGO_PORT=27017
+```
+
+Run the `docker-compose` command in this directory to build the container:
+```script
+cd database
+docker-compose -p planningjam_database up -d
+```
+This will create a Docker container called `planningjam_database` and build a mongodb service. 
+
+#### Creating the Database
+
+Connect to the mongodb with the root credentials and port set in the `.env` file.
+```
+mongosh "mongodb://<root_username>:<root_password>@localhost:<port>/planningjam?authSource=admin"
+```
+
+Within the mongosh shell, setup a new database called `planningjam`
+```
+use planningjam
+```
+
+Create a new user with read and write permission to the database. Set the username and password for the database user credentials. 
+```
+db.createUser({
+  user: "<username>",
+  pwd: "<password>",
+  roles: [{ role: "readWrite", db: "planningjam" }]
+})
+```
+
+Exit the mongo shell and test the new user by logging in to the MongoDB with the new user credentials and port.
+```
+mongosh "mongodb://<db_user>:<db_password>@localhost:<port>/planningjam
+```
+
+### Docker
+
+The frontend and backend for this project can be run using dockerized containers. Before beginning, ensure the following are installed:
+
+- **Docker** - [https://www.docker.com/](https://www.docker.com/)
+- **Docker Compose**
+
+#### Getting Started
+
+From the project's root directory run the following command
+```
+docker-compose -p planningjam up --build
+```
+This command creates a new docker project called `planningjam` and creates container images for the frontend (django) and backend (react) application's services.
+
+To run the container in the background, use the -d (detached) flag:
+```
+docker-compose -p planningjam up --build -d
+```
+
+After the services are up and running, you can access the applications at the following URLs:
+
+- Backend (Django): http://localhost:8000
+
+- Frontend (Vite/React): http://localhost:5173
+
+#### Running Docker Containers Separately
+
+While `docker-compose` is designed for managing multiple services at once, `docker run` is used to create and start a single container. 
+
+Either the frontend or backend can be run independently using the `docker run` command to build and run the container from the `Dockerfile` configured in their respective directory. 
+
+**Running the Frontend**
+
+To run the frontend, first build the container with the following
+```
+docker build -t planningjam-frontend ./frontend
+```
+
+and then run it with
+```
+docker run -d --name planningjam-frontend -p 5173:5173 planningjam-frontend
+```
+The application should then be accessible at http://localhost:5173 .
+
+**Running the Backend**
+
+To run the backend, first build the container with the following
+```
+docker build -t planningjam-backend ./backend
+```
+
+and then run it with
+```
+docker run -d --name planningjam-backend -p 5173:5173 planningjam-backend
+```
+
+The application should then be accessible at http://localhost:8000 .
+
 ---
 
 ## Essential Roadmap
