@@ -10,7 +10,7 @@ services:
       - "8000:8000"
     command: python manage.py runserver 0.0.0.0:8000
     networks:
-      - app-network
+      - planjam-network
 
   planningjam_frontend:
     build:
@@ -24,8 +24,8 @@ services:
       - "5173:5173"
     command: npm run dev -- --host 0.0.0.0
     networks:
-      - app-network
+      - planjam-network
 
 networks:
-  app-network:
-    driver: bridge
+  planjam-network:
+    external: true

@@ -4,6 +4,23 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
 
 ---
 
+## Table of Contents
+
+- [Team Members and Roles](#-team-members-and-roles)
+- [Features](#-features)
+- [Project Setup and Run Guide](#project-setup-and-run-guide)
+  - [System Requirements](#system-requirements)
+  - [Frontend Development](#frontend-development)
+  - [Backend Development](#backend-development)
+  - [Database](#database)
+  - [Docker](#docker)
+- [Essential Roadmap](#essential-roadmap)
+- [Desirable Roadmap](#desirable-roadmap)
+- [Optional Roadmap](#optional-roadmap)
+- [Tech Stack](#️-tech-stack)
+
+---
+
 ## 🧑‍💻 Team Members and Roles
 - **David** – Team Leader  
 - **Ashley** – Requirement Leader  
@@ -39,7 +56,7 @@ The frontend is built using the React framework with Vite build tool.
 
 All frontend development should be done in the `frontend/` directory.
 
-1. Install dependencies within the `frontend` directory.
+Install dependencies within the `frontend` directory
 ```
 cd frontend
 npm install
@@ -82,71 +99,77 @@ All backend development should be done in the `backend/` directory. To setup the
 
 1. Create a python virtual environment in the backend directory
 
-```
-cd backend
-python -m venv .venv
-```
+    ```
+    cd backend
+    python -m venv .venv
+    ```
 
 2. Activate the `venv`
 
-```
-# for macOS or Linux
-source .venv/bin/activate
+    ```
+    # for macOS or Linux
+    source .venv/bin/activate
 
-# for Windows
-.venv\Scripts\activate
-```
+    # for Windows
+    .venv\Scripts\activate
+    ```
 
 3. Install the dependencies
 
-```
-pip install -r requirements.txt
-```
+    ```
+    pip install -r requirements.txt
+    ```
 
-*Note:* 
+    *Note:* 
 
-When installing new packages, update the `requirements.txt` with the following:
+    When installing new packages, update the `requirements.txt` with the following:
 
-```
-pip freeze > requirements.txt
-```
+    ```
+    pip freeze > requirements.txt
+    ```
 
 4. Setup the environment variables
 
-In the `backend` directory, copy the contents in the `.env.example` file into a new `.env` file. 
+    In the `backend` directory, copy the contents in the `.env.example` file into a new `.env` file. 
 
-Then generate a new Django `SECRET KEY` with the following commands:
-```
-python manage.py shell
-from django.core.management.utils import get_random_secret_key
-get_random_secret_key()
-```
+    Then generate a new Django `SECRET KEY` with the following commands:
+    ```
+    python manage.py shell
+    from django.core.management.utils import get_random_secret_key
+    get_random_secret_key()
+    ```
 
-Copy the generated key into the `.env` file.
+    Copy the generated key into the `.env` file.
 
-```
-...
-SECRET_KEY=your_django_secret_key_here
+    ```
+    ...
+    SECRET_KEY=your_django_secret_key_here
 
-...
-```
+    ...
+    ```
 
 #### Setting Up MongoDB With The Backend
 
 1. Configure the MongoDB Connection
 
-In the `.env` file, add the MongoDB host connection URL
+    In the `.env` file, add the MongoDB host connection URL
 
-i.e. 
-```
-MONGO_HOST=mongodb://user:password@localhost:27017/database_name
-```
+    i.e. 
+    ```
+    MONGO_HOST=mongodb://user:password@localhost:27017/database_name
+    ```
+
+    If both the backend and the MongoDB are running on docker containers, the host url for the database will not be accessible via `localhost`. An IP Address from the docker network will be needed instead. To obtain the IP address of the MongoDB container, run the following: 
+
+    ```
+    docker network inspect planjam-network
+    ```
 
 2. Verify the connection is working by running the server. 
 
-```
-python manage.py migrate
-```
+    ```
+    python manage.py migrate
+    ```
 
 ##### Database Migration
 
@@ -189,6 +212,12 @@ docker-compose -p planningjam_database up -d
 ```
 This will create a Docker container called `planningjam_database` and build a mongodb service. 
 
+Run the following to create a Docker network if not already created:
+```
+docker network create planjam-network
+```
+This will create the network `planjam-network`, allowing other containers in the same network to communicate with each other. 
+
 #### Creating the Database
 
 Connect to the mongodb with the root credentials and port set in the `.env` file.
@@ -224,22 +253,39 @@ The frontend and backend for this project can be run using dockerized containers
 
 #### Getting Started
 
-From the project's root directory run the following command
-```
-docker-compose -p planningjam up --build
-```
-This command creates a new docker project called `planningjam` and creates container images for the frontend (django) and backend (react) application's services.
+1. Run the following to create a Docker network if not already created:
+    ```
+    docker network create planjam-network
+    ```
+    This will create the network `planjam-network`, allowing other containers in the same network to communicate with each other. 
 
-To run the container in the background, use the -d (detached) flag:
+2. From the project's root directory run the following command
+    ```
+    docker-compose -p planningjam up --build
+    ```
+    This command creates a new docker project called `planningjam` and creates container images for the frontend (django) and backend (react) application's services.
+
+    To run the container in the background, use the -d (detached) flag:
+    ```
+    docker-compose -p planningjam up --build -d
+    ```
+
+    After the services are up and running, you can access the applications at the following URLs:
+
+    - Backend (Django): http://localhost:8000
+
+    - Frontend (Vite/React): http://localhost:5173
+
+#### Docker Network IP
+
+There may be instances where a container needs to communicate with another container through their network `IP Address` instead of `localhost`, i.e. the backend container needs to communicate with the mongodb container. 
+
+To obtain the a list of IP Addresses in a network, execute the command 
 ```
-docker-compose -p planningjam up --build -d
+docker network inspect <network_name_or_id>
 ```
 
-After the services are up and running, you can access the applications at the following URLs:
-
-- Backend (Django): http://localhost:8000
-
-- Frontend (Vite/React): http://localhost:5173
+*Note:* The Docker network for the project is called `planjam-network`.
 
 #### Running Docker Containers Separately
 
