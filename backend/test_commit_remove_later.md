@@ -1,0 +1,1 @@
+This is a test commit since I have no idea about what the git in cursor is trying to do.
