@@ -141,7 +141,6 @@ MIGRATION_MODULES = {
 }
 
 # CORS settings
-print(os.environ.get('CORS_ORIGINS'))
 CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ORIGINS', '').split(',')
 
 CORS_ALLOW_CREDENTIALS = True
