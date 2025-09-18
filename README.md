@@ -152,18 +152,27 @@ All backend development should be done in the `backend/` directory. To setup the
 
 1. Configure the MongoDB Connection
 
-    In the `.env` file, add the MongoDB host connection URL
+    In the `.env` file, add the MongoDB configurations
 
     i.e. 
     ```
-    MONGO_HOST=mongodb://user:password@localhost:27017/database_name
+    MONGO_DATABASE_HOST=mongodb+srv://cluster_name.example.mongodb.net
+    MONGO_DATABASE_NAME=database_name
+    MONGO_DATABASE_USER=database_user
+    MONGO_DATABASE_PWD=database_password
+    MONGO_DATABASE_PORT=27017
+    MONGO_DATABASE_TLS=true #set false if using a local mongodb
+    MONGO_DATABASE_SSL=true #set false if using a local mongodb
     ```
 
-    If both the backend and the MongoDB are running on docker containers, the host url for the database will not be accessible via `localhost`. An IP Address from the docker network will be needed instead. To obtain the IP address of the MongoDB container, run the following: 
+    *NOTE:* 
+    - If the database name does not exists within the MongoDB cluster, a new database will be created by that name.
 
-    ```
-    docker network inspect planjam-network
-    ```
+    - If both the backend and the MongoDB are running on docker containers, the host url for the database will not be accessible via `localhost`. An IP Address from the docker network or its contianer name will be needed instead. To obtain the IP address of the MongoDB container, run the following: 
+
+        ```
+        docker network inspect planjam-network
+        ```
 
 2. Verify the connection is working by running the server. 
 

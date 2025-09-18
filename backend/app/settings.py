@@ -86,7 +86,20 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": django_mongodb_backend.parse_uri(os.environ.get('MONGO_DATABASE_HOST')),
+    "default": {
+        "ENGINE": "django_mongodb_backend",
+        "HOST": os.environ.get('MONGO_DATABASE_HOST'),
+        "NAME": os.environ.get('MONGO_DATABASE_NAME'),
+        "USER": os.environ.get('MONGO_DATABASE_USER'),
+        "PASSWORD": os.environ.get('MONGO_DATABASE_PWD'),
+        "PORT": os.environ.get('MONGO_DATABASE_PORT'),
+        "OPTIONS": {
+            "retryWrites": "true",
+            "w": "majority",
+            "tls": os.environ.get('MONGO_DATABASE_TLS'),
+            "ssl": os.environ.get('MONGO_DATABASE_SSL')
+        }
+    },
 }
 
 # Database routers
@@ -141,7 +154,6 @@ MIGRATION_MODULES = {
 }
 
 # CORS settings
-print(os.environ.get('CORS_ORIGINS'))
 CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ORIGINS', '').split(',')
 
 CORS_ALLOW_CREDENTIALS = True
