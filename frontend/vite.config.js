@@ -7,4 +7,9 @@ export default defineConfig({
   server: {
     allowedHosts: process.env.VITE_ALLOWED_HOSTS ? process.env.VITE_ALLOWED_HOSTS.split(',') : [],
   },
+  test: {
+    globals: true, // Enables global test APIs without imports
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.js', // Path to your test setup file
+  },
 })
