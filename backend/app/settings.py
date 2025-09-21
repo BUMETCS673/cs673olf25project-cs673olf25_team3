@@ -13,6 +13,7 @@ import os
 import dotenv
 import django_mongodb_backend
 from pathlib import Path
+from datetime import timedelta
 
 # Load environment variables from .env file
 dotenv.load_dotenv()
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'api',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -84,7 +86,20 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": django_mongodb_backend.parse_uri(os.environ.get('MONGO_DATABASE_HOST')),
+    "default": {
+        "ENGINE": "django_mongodb_backend",
+        "HOST": os.environ.get('MONGO_DATABASE_HOST'),
+        "NAME": os.environ.get('MONGO_DATABASE_NAME'),
+        "USER": os.environ.get('MONGO_DATABASE_USER'),
+        "PASSWORD": os.environ.get('MONGO_DATABASE_PWD'),
+        "PORT": os.environ.get('MONGO_DATABASE_PORT'),
+        "OPTIONS": {
+            "retryWrites": "true",
+            "w": "majority",
+            "tls": os.environ.get('MONGO_DATABASE_TLS'),
+            "ssl": os.environ.get('MONGO_DATABASE_SSL')
+        }
+    },
 }
 
 # Database routers
@@ -139,17 +154,26 @@ MIGRATION_MODULES = {
 }
 
 # CORS settings
-print(os.environ.get('CORS_ORIGINS'))
 CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ORIGINS', '').split(',')
 
 CORS_ALLOW_CREDENTIALS = True
 
 # REST Framework settings
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # Optional: keep session auth too, if you want the Django admin UI to still work
         'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+# Simple JWT settings (possibly move to .env vars later)
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
 }
