@@ -1,9 +1,9 @@
 import React from "react";
 import FriendsList from "./FriendsList";
-import './util.js';
+import User from './util.js';
 
 export default function Friends() {
-    myself =  User("David");
+    var myself =  new User("David");
 
     const friends = [].filter(user =>
     user.isFriends(myself)

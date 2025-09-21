@@ -1,4 +1,4 @@
-class User {
+export default class User {
     name;
     biography;
     profilePicture;
