@@ -62,7 +62,6 @@ function SignUp() {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
