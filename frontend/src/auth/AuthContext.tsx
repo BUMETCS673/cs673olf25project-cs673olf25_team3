@@ -1,3 +1,5 @@
+// AI-generated: 80%
+// Human-written: 20%
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 

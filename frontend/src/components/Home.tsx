@@ -1,4 +1,8 @@
-import {Box } from "@mui/material";
+// AI-generated: 0%
+// Human-written: 100%
+
+
+import { Box } from "@mui/material";
 
 function Home() {
   return (

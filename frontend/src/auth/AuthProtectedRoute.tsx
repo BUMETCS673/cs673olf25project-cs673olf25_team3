@@ -1,4 +1,5 @@
-// src/components/ProtectedRoute.tsx
+// AI-generated: 5%
+// Human-written: 95%
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";

@@ -1,3 +1,5 @@
+// AI-generated: 60%
+// Human-written: 40%
 import { useEffect, useState } from "react";
 import { Card, CardContent, Typography, TextField, Button, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";

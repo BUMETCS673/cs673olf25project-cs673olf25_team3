@@ -1,3 +1,5 @@
+// AI-generated: 10%
+// Human-written: 90%
 async function registerUser({ username, email, password, confirmPassword }) {
   try {
     const response = await fetch("http://localhost:8000/api/register/", {

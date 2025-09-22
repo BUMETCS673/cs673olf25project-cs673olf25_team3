@@ -1,3 +1,5 @@
+// AI-generated: 0%
+// Human-written: 100%
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './auth/Login'
 import SignUp from './auth/Signup'

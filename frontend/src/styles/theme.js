@@ -1,3 +1,5 @@
+// AI-generated: 10%
+// Human-written: 90%
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
