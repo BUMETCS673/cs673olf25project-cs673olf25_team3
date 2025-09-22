@@ -152,11 +152,11 @@ All backend development should be done in the `backend/` directory. To setup the
 
 1. Configure the MongoDB Connection
 
-    In the `.env` file, add the MongoDB configurations
+    In the `backend/.env` file, add the MongoDB host url and credentials.
 
     i.e. 
     ```
-    MONGO_DATABASE_HOST=mongodb+srv://cluster_name.example.mongodb.net
+    MONGO_HOST=mongodb://localhost
     MONGO_DATABASE_NAME=database_name
     MONGO_DATABASE_USER=database_user
     MONGO_DATABASE_PWD=database_password
@@ -165,29 +165,17 @@ All backend development should be done in the `backend/` directory. To setup the
     MONGO_DATABASE_SSL=true #set false if using a local mongodb
     ```
 
-    *NOTE:* 
-    - If the database name does not exists within the MongoDB cluster, a new database will be created by that name.
+    *Note:* If both the backend and the MongoDB are both running on docker containers, the host url for the database will not be accessible via `localhost`. Connect the MongoDB container to the docker network `planjam-network` if its not already connected, then use the container name in place of `localhost`, i.e. `mongodb://mongodb`
 
-    - If both the backend and the MongoDB are running on docker containers, the host url for the database will not be accessible via `localhost`. An IP Address from the docker network or its contianer name will be needed instead. To obtain the IP address of the MongoDB container, run the following: 
-
-        ```
-        docker network inspect planjam-network
-        ```
+    ```
+    docker network connect planjam-network <mongodb_container_name>
+    ```
 
 2. Verify the connection is working by running the server. 
 
     ```
     python manage.py migrate
     ```
-
-##### Database Migration
-
-After creating new model in the application, create a migration for the model.
-```
-python manage.py makemigrations <app_name>
-python manage.py migrate
-```
-For the api application, set the `app_name` to api
 
 #### Running the Backend
 
