@@ -1,12 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, Typography, TextField, Button, Box } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "./endpoints/auth";
+import { useAuth } from "./AuthContext";
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login, auth } = useAuth();
+  const navigate = useNavigate();
 
-  const isValid = email.trim() !== "" && password.trim() !== "";
+  const isValid = username.trim() !== "" && password.trim() !== "";
+
+  useEffect(() => {
+    if (auth.accessToken) {
+      navigate("/home");
+    }
+  }, [auth.accessToken, navigate]);
+
+  const handleLogin = async () => {
+    setError("");
+    const result = await loginUser({ username, password });
+
+    if (result.errorMessage) {
+      setError(result.errorMessage);
+    } else {
+      localStorage.setItem("access", result.access);
+      localStorage.setItem("refresh", result.refresh);
+      login(result.access, result.refresh)
+      navigate("/home");
+    }
+  };
 
   return (
     <Box
@@ -24,13 +49,13 @@ function Login() {
             Login
           </Typography>
 
-          {/* Email */}
+          {/* Username */}
           <TextField
-            label="Email"
+            label="Username"
             fullWidth
             margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             slotProps={{ input: { style: { backgroundColor: "white" } } }}
           />
 
@@ -45,6 +70,13 @@ function Login() {
             slotProps={{ input: { style: { backgroundColor: "white" } } }}
           />
 
+          {/* Error message */}
+          {error && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              {error}
+            </Typography>
+          )}
+
           {/* Login Button */}
           <Button
             variant="contained"
@@ -52,6 +84,7 @@ function Login() {
             fullWidth
             sx={{ mt: 2 }}
             disabled={!isValid}
+            onClick={handleLogin}
           >
             Login
           </Button>

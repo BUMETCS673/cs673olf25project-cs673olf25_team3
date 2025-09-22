@@ -1,19 +1,61 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, Typography, TextField, Button, Box } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; 
+import { registerUser } from "./endpoints/auth";
+import { useAuth } from "./AuthContext";
+
+interface FieldErrors {
+  username?: string[];
+  email?: string[];
+  password?: string[];
+  confirmPassword?: string[];
+}
 
 function SignUp() {
-  const [fullName, setFullName] = useState("");
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  const { auth, login } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (auth.accessToken) {
+      navigate("/home");
+    }
+  }, [auth.accessToken, navigate]);
 
   const isValid =
-    fullName.trim() !== "" &&
+    username.trim() !== "" &&
     email.trim() !== "" &&
     password.trim() !== "" &&
     confirmPassword.trim() !== "" &&
     password === confirmPassword;
+
+  const handleSignUp = async () => {
+    const result = await registerUser({ username, email, password, confirmPassword });
+
+    if (result.access && result.refresh) {
+      login(result.access, result.refresh);
+      navigate("/home");
+    } else if (result.errors) {
+      const fieldErrors: FieldErrors = {};
+      result.errors.forEach(err => {
+        const [field, message] = err.split(": ");
+        if (field && message) {
+          if (!fieldErrors[field as keyof FieldErrors]) {
+            fieldErrors[field as keyof FieldErrors] = [];
+          }
+          fieldErrors[field as keyof FieldErrors]?.push(message);
+        }
+      });
+      setErrors(fieldErrors);
+    } else {
+      setErrors({});
+    }
+  };
 
   return (
     <Box
@@ -31,13 +73,15 @@ function SignUp() {
             Sign Up
           </Typography>
 
-        {/* Full Name */}
+          {/* Username */}
           <TextField
-            label="Full Name"
+            label="Username"
             fullWidth
             margin="normal"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            value={username}
+            onChange={(e) => setUserName(e.target.value)}
+            error={!!errors.username}
+            helperText={errors.username?.join(" ")}
             slotProps={{ input: { style: { backgroundColor: "white" } } }}
           />
 
@@ -48,6 +92,8 @@ function SignUp() {
             margin="normal"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={!!errors.email}
+            helperText={errors.email?.join(" ")}
             slotProps={{ input: { style: { backgroundColor: "white" } } }}
           />
 
@@ -59,6 +105,8 @@ function SignUp() {
             margin="normal"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            error={!!errors.password}
+            helperText={errors.password?.join(" ")}
             slotProps={{ input: { style: { backgroundColor: "white" } } }}
           />
 
@@ -74,7 +122,7 @@ function SignUp() {
             helperText={
               confirmPassword !== "" && password !== confirmPassword
                 ? "Passwords do not match"
-                : ""
+                : errors.confirmPassword?.join(" ")
             }
             slotProps={{ input: { style: { backgroundColor: "white" } } }}
           />
@@ -86,6 +134,7 @@ function SignUp() {
             fullWidth
             sx={{ mt: 2 }}
             disabled={!isValid}
+            onClick={handleSignUp}
           >
             Sign Up
           </Button>
@@ -107,4 +156,3 @@ function SignUp() {
 }
 
 export default SignUp;
-
