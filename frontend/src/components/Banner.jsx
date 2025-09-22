@@ -17,7 +17,7 @@ function Banner(){
       <AppBar position="static" >
         <Toolbar>
             <div  style={{display: "flex", flexDirection: "row", justifyContent: "space-around", alignItems: "center", margin: "auto"}}>
-                <Typography align="center" variant="h4" component="div" >
+                <Typography align="center" variant="h4" component="div" color="rgb(66 33 111)">
                     PlanningJam
                 </Typography>
                 <Logo></Logo>
