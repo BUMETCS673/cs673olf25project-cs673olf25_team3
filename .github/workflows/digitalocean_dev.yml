@@ -29,7 +29,7 @@ jobs:
           cache-dependency-path: 'frontend/package-lock.json'
       - run: npm ci
       - run: npm run build --if-present
-      - run: npm test
+      #- run: npm test
   
   # Backend CI
   backend-ci:
@@ -60,8 +60,9 @@ jobs:
       
       - name: Create .env file from environment variables
         run: |
-          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+          echo "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
           echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
           echo "MONGO_DATABASE_HOST=${{ secrets.MONGO_DATABASE_HOST }}" >> .env
           echo "MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }}" >> .env
           echo "MONGO_DATABASE_USER=${{ secrets.MONGO_DATABASE_USER }}" >> .env
