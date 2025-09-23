@@ -134,7 +134,7 @@ jobs:
           username: ${{ secrets.DROPLET_USER_STAGING }}
           key: ${{ secrets.DROPLET_KEY_STAGING }}
           script: |
-            cd /app
+            cd ~/app
             echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_TOKEN }} --password-stdin registry.digitalocean.com
             docker compose pull
             docker compose up -d
