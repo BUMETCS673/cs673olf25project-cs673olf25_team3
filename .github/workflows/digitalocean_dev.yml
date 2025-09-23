@@ -132,8 +132,11 @@ jobs:
         with:
           host: ${{ secrets.DROPLET_IP_STAGING }}
           username: ${{ secrets.DROPLET_USER_STAGING }}
-          key: ${{ secrets.DROPLET_SSH_KEY_STAGING }}
+          key: ${{ secrets.DROPLET_KEY_STAGING }}
           script: |
             cd /app
-            docker-compose pull
-            docker-compose up -d
+            docker login -u ${{ secrets.DOCKER_TOKEN }} -p ${{ secrets.DOCKER_TOKEN }} registry.digitalocean.com
+            docker compose pull
+            docker compose up -d
+            docker logout registry.digitalocean.com
+
