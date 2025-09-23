@@ -135,7 +135,7 @@ jobs:
           key: ${{ secrets.DROPLET_KEY_STAGING }}
           script: |
             cd /app
-            docker login -u ${{ secrets.DOCKER_TOKEN }} -p ${{ secrets.DOCKER_TOKEN }} registry.digitalocean.com
+            echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_TOKEN }} --password-stdin registry.digitalocean.com
             docker compose pull
             docker compose up -d
             docker logout registry.digitalocean.com
