@@ -76,6 +76,7 @@ jobs:
 
   # Frontend Build
   frontend-build:
+    needs: frontend-ci
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -98,6 +99,7 @@ jobs:
 
   # Backend Build
   backend-build:   
+    needs: backend-ci
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -119,7 +121,8 @@ jobs:
           docker push ${{ secrets.DOCKER_REGISTRY }}/planningjam_api_dev:latest
   
   # Deploy to Droplet
-  deploy:   
+  deploy:
+    needs: [frontend-build, backend-build]
     runs-on: ubuntu-latest
     steps:
       - name: SSH to droplet and deploy
