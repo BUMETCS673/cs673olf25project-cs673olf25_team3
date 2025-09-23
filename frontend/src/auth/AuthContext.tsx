@@ -23,6 +23,8 @@ interface AuthContextType {
   authFetch: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const AuthContext = createContext<AuthContextType>({
   auth: { accessToken: null, refreshToken: null },
   user: null,
@@ -85,7 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/token/refresh/", {
+      const res = await fetch(`${baseUrl}/api/token/refresh/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh: auth.refreshToken }),
@@ -157,7 +159,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
 
     try {
-      const res = await authFetch("http://localhost:8000/api/profile/");
+      const res = await authFetch(`${baseUrl}/api/profile/`);
       if (res.ok) {
         const data: User = await res.json();
         setUser(data);
