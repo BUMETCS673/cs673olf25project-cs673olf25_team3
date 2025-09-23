@@ -5,6 +5,9 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+# Framework-generated: 5%
+# Human-written: 45%
+# AI-generated: 50%
 User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
