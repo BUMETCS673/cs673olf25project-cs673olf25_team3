@@ -9,6 +9,9 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+# Framework-generated: 30%
+# Human-written: 30%
+# AI-generated: 40%
 import os
 import dotenv
 import django_mongodb_backend

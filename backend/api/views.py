@@ -7,7 +7,9 @@ from .serializer import UserRegistrationSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
+# Framework-generated: 5%
+# Human-written: 30%
+# AI-generated: 65%
 User = get_user_model()
 
 @api_view(['POST'])
