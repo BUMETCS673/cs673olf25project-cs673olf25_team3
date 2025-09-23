@@ -92,8 +92,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_TOKEN }}
           password: ${{ secrets.DOCKER_TOKEN }}
-          registry: ${{ secrets.DOCKER_REGISTRY }}
-
+          registry: registry.digitalocean.com
+          
       - name: Build frontend image
         run: |
           docker build -t ${{ secrets.DOCKER_REGISTRY }}/planningjam_dev:latest
