@@ -62,6 +62,15 @@ cd frontend
 npm install
 ```
 
+
+In the `frontend` directory, copy the contents in the `.env.example` file into a new `.env` file. 
+Set the VITE_BASE_URL to be the api base url, which will likely be http://localhost:8000/. If not, check where the backend points to later.
+
+    ```
+    VITE_API_BASE_URL=http://localhost:8000
+    ```
+
+
 #### Running the Frontend
 
 To run the frontend locally, run the following command:
