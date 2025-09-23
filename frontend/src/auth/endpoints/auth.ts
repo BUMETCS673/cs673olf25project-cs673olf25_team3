@@ -1,8 +1,11 @@
 // AI-generated: 10%
 // Human-written: 90%
+
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 async function registerUser({ username, email, password, confirmPassword }) {
   try {
-    const response = await fetch("http://localhost:8000/api/register/", {
+    const response = await fetch(`${baseUrl}/api/register/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -38,8 +41,9 @@ async function registerUser({ username, email, password, confirmPassword }) {
 
 
 async function loginUser({ username, password }) {
+
   try {
-    const response = await fetch("http://localhost:8000/api/token/", {
+    const response = await fetch(`${baseUrl}/api/token/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
