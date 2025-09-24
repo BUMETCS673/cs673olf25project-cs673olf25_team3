@@ -1,4 +1,7 @@
-//Generated using https://react-svgr.com/playground/ , but the actual SVG was created manually
+//
+//AI-generated: 0%
+//Human-written: 100% (tool: inkscape, https://react-svgr.com/playground/)
+//Note: Generated using https://react-svgr.com/playground/ , but the actual SVG was created manually
 
 const Logo = (props) => (
   <svg

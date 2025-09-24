@@ -1,7 +1,8 @@
 /*
 
-AI-generated / Reference: 50% (from MUI documentation: AppBar, Toolbar, Box usage patterns, basic layout examples)
-Human-written: 50% (logic: custom Banner component, Typography text, Logo placement, flex styling, color choices)
+AI-generated: 0%
+From Documentation: 40% (from MUI documentation: AppBar, Toolbar, Box usage patterns, basic layout examples)
+Human-written: 60% (logic: custom Banner component, Typography text, Logo placement, flex styling, color choices)
 
 Notes:
 
