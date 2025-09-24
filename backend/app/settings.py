@@ -9,9 +9,9 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-# Framework-generated: 30%
+# Framework-generated: 35%
 # Human-written: 30%
-# AI-generated: 40%
+# AI-generated: 35%
 import os
 import dotenv
 import django_mongodb_backend
@@ -165,7 +165,7 @@ CORS_ALLOW_CREDENTIALS = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # Optional: keep session auth too, if you want the Django admin UI to still work
+        # Keep session auth too, if want the Django admin UI to still work
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
