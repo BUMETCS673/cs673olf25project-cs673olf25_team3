@@ -1,5 +1,13 @@
-// AI-generated: 80%
-// Human-written: 20%
+/*
+
+AI-generated: 80% (Tool: ChatGPT, Cursor mainly boilerplate for AuthContext, token refresh logic, useEffect timers)
+Human-written: 20% (functions: fetchProfile, isTokenExpired adjustments, logout redirect, minor modifications for project needs)
+
+Notes:
+- Most core AuthContext setup, token handling, and fetch wrappers were AI-assisted.
+- Human contributions: specific business logic, error handling, logout navigation, user state updates.
+
+*/
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 

@@ -1,5 +1,15 @@
-// AI-generated: 60%
-// Human-written: 40%
+/*
+
+AI-generated: 60% (Tool: ChatGPT, Cusor, primarily MUI component structure, form layout, error parsing and mapping,)
+Human-written: 40% (logic: handleSignUp function, validation, integration with AuthContext, navigation after signup, state management)
+
+Notes:
+
+Most of the UI layout, styling, and basic form state setup were AI-assisted.
+
+Human contributions handle the real signup flow: calling the registerUser endpoint, parsing errors, storing tokens, updating auth state, and redirecting on success.
+
+*/
 import { useEffect, useState } from "react";
 import { Card, CardContent, Typography, TextField, Button, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom"; 

@@ -1,6 +1,14 @@
-// AI-generated: 0%
-// Human-written: 100%
+/*
 
+AI-generated: 0%
+Human-written: 100% (function: Home; logic: simple UI layout using MUI Box component)
+
+Notes:
+
+* Entire component is human-written.
+* Renders a centered “Welcome home” message using MUI Box.
+
+*/
 
 import { Box } from "@mui/material";
 

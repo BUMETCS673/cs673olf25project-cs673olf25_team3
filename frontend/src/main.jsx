@@ -1,5 +1,15 @@
-// AI-generated: 0%
-// Human-written: 100%
+/*
+
+AI-generated: 0%
+Human-written: 100% (logic: application root setup, wrapping with providers, ReactDOM rendering)
+
+Notes:
+
+Entire file is human-written.
+
+Sets up React StrictMode, routing, theme provider, global CSS baseline, authentication context, and renders the main App component.
+
+*/
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'

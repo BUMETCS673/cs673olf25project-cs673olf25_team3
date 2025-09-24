@@ -1,5 +1,15 @@
-// AI-generated: 10%
-// Human-written: 90%
+/*
+
+AI-generated: 10% (Tool: ChatGPT, Cursor suggested basic `createTheme` structure and palette setup)
+Human-written: 90% (logic: custom colors, rounded shapes, typography choices, specific palette tweaks)
+
+Notes:
+
+* AI contribution was minimal: basic `createTheme` template.
+* All design decisions, color codes, typography, and border radius are human-written and project-specific.
+
+*/
+
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({

@@ -1,4 +1,15 @@
-//roughly 50% is from MUI documentation, 50% handwritten
+/*
+
+AI-generated / Reference: 50% (from MUI documentation: AppBar, Toolbar, Box usage patterns, basic layout examples)
+Human-written: 50% (logic: custom Banner component, Typography text, Logo placement, flex styling, color choices)
+
+Notes:
+
+Layout structure and MUI component usage were adapted from documentation examples.
+
+Customizations, styling, and integration with the Logo component are fully human-written.
+
+*/
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
