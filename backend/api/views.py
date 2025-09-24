@@ -7,7 +7,7 @@ from .serializer import UserRegistrationSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# Framework-generated: 5%
+# Framework-generated: 10%
 # Human-written: 30%
 # AI-generated: 65%
 User = get_user_model()
@@ -15,6 +15,9 @@ User = get_user_model()
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
+    """
+    Register a new user
+    """
     serializer = UserRegistrationSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()  # this already hashes password & checks confirm
@@ -34,6 +37,9 @@ def register_user(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
+    """
+    Get current user profile
+    """
     user = request.user
     serializer = UserSerializer(user)
     return Response(serializer.data)
