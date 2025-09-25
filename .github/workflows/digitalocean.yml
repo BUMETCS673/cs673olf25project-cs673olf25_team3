@@ -1,10 +1,8 @@
 name: Digital Ocean Production CICD
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  release:
+    types: [published]
 
 jobs:
   # Frontend CI
@@ -94,10 +92,26 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
           registry: registry.digitalocean.com
 
-      - name: Build frontend image
+      - name: Extract dynamic version from tag
+        id: extract_version
         run: |
-          docker build -t ${{ secrets.DOCKER_REGISTRY }}/planningjam:latest --file Dockerfile.prod .
-          docker push ${{ secrets.DOCKER_REGISTRY }}/planningjam:latest
+          RELEASE_TAG=${{ github.event.release.tag_name }}
+      
+          # Use grep to extract the most complete version number
+          VERSION_NUMBER=$(echo "$RELEASE_TAG" | grep -o '[0-9]\+\(\.[0-9]\+\)\{0,2\}')
+      
+          # Set the extracted version as a step output
+          echo "version=$VERSION_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: frontend/
+          file: frontend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/planningjam:${{ steps.extract_version.outputs.version }}
+            ${{ secrets.DOCKER_REGISTRY }}/planningjam:latest
 
   # Backend Build
   backend-build:   
@@ -117,10 +131,26 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
           registry: registry.digitalocean.com
 
-      - name: Build backend image
+      - name: Extract dynamic version from tag
+        id: extract_version
         run: |
-          docker build -t ${{ secrets.DOCKER_REGISTRY }}/planningjam_api:latest --file Dockerfile.prod .
-          docker push ${{ secrets.DOCKER_REGISTRY }}/planningjam_api:latest
+          RELEASE_TAG=${{ github.event.release.tag_name }}
+      
+          # Use grep to extract the most complete version number
+          VERSION_NUMBER=$(echo "$RELEASE_TAG" | grep -o '[0-9]\+\(\.[0-9]\+\)\{0,2\}')
+      
+          # Set the extracted version as a step output
+          echo "version=$VERSION_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/
+          file: backend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/planningjam-api:${{ steps.extract_version.outputs.version }}
+            ${{ secrets.DOCKER_REGISTRY }}/planningjam-api:latest
   
   # Frontend Deploy to Droplet
   frontend-deploy:
