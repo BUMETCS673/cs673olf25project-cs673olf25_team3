@@ -1,3 +1,7 @@
+# Framework-generated: 0%
+# Human-written: 45%
+# AI-generated: 55%
+
 name: Digital Ocean Staging CICD
 
 on:
