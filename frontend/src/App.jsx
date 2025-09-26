@@ -1,5 +1,17 @@
-// AI-generated: 0%
-// Human-written: 100%
+/*
+
+AI-generated: 0%
+Human-written: 100% (function: App; logic: routing setup, layout structure, integration of components and protected routes)
+
+Notes:
+
+Entire routing and layout logic is human-written.
+
+Uses React Router to define routes, redirects, and wraps protected routes with AuthProtectedRoute.
+
+Includes Banner and flexbox layout for the application structure.
+
+*/
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './auth/Login'
 import SignUp from './auth/Signup'

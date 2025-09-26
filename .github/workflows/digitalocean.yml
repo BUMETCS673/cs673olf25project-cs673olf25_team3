@@ -1,14 +1,12 @@
 # Framework-generated: 0%
-# Human-written: 45%
-# AI-generated: 55%
+# Human-written: 35%
+# AI-generated: 65%
 
-name: Digital Ocean Staging CICD
+name: Digital Ocean Production CICD
 
 on:
-  push:
-    branches: [ "development" ]
-  pull_request:
-    branches: [ "development" ]
+  release:
+    types: [published]
 
 jobs:
   # Frontend CI
@@ -98,10 +96,26 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
           registry: registry.digitalocean.com
 
-      - name: Build frontend image
+      - name: Extract dynamic version from tag
+        id: extract_version
         run: |
-          docker build -t ${{ secrets.DOCKER_REGISTRY }}/planningjam_dev:latest .
-          docker push ${{ secrets.DOCKER_REGISTRY }}/planningjam_dev:latest
+          RELEASE_TAG=${{ github.event.release.tag_name }}
+      
+          # Use grep to extract the most complete version number
+          VERSION_NUMBER=$(echo "$RELEASE_TAG" | grep -o '[0-9]\+\(\.[0-9]\+\)\{0,2\}')
+      
+          # Set the extracted version as a step output
+          echo "version=$VERSION_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: frontend/
+          file: frontend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/planningjam:${{ steps.extract_version.outputs.version }}
+            ${{ secrets.DOCKER_REGISTRY }}/planningjam:latest
 
   # Backend Build
   backend-build:   
@@ -121,26 +135,59 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
           registry: registry.digitalocean.com
 
-      - name: Build backend image
+      - name: Extract dynamic version from tag
+        id: extract_version
         run: |
-          docker build -t ${{ secrets.DOCKER_REGISTRY }}/planningjam_api_dev:latest .
-          docker push ${{ secrets.DOCKER_REGISTRY }}/planningjam_api_dev:latest
+          RELEASE_TAG=${{ github.event.release.tag_name }}
+      
+          # Use grep to extract the most complete version number
+          VERSION_NUMBER=$(echo "$RELEASE_TAG" | grep -o '[0-9]\+\(\.[0-9]\+\)\{0,2\}')
+      
+          # Set the extracted version as a step output
+          echo "version=$VERSION_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/
+          file: backend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/planningjam-api:${{ steps.extract_version.outputs.version }}
+            ${{ secrets.DOCKER_REGISTRY }}/planningjam-api:latest
   
-  # Deploy to Droplet
-  deploy:
-    needs: [frontend-build, backend-build]
+  # Frontend Deploy to Droplet
+  frontend-deploy:
+    needs: frontend-build
     runs-on: ubuntu-latest
     steps:
       - name: SSH to droplet and deploy
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.DROPLET_IP_STAGING }}
-          username: ${{ secrets.DROPLET_USER_STAGING }}
-          key: ${{ secrets.DROPLET_KEY_STAGING }}
+          host: ${{ secrets.DROPLET_IP_FRONTEND }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_KEY }}
           script: |
-            cd ~/app
+            cd /srv/app
             echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_TOKEN }} --password-stdin registry.digitalocean.com
             docker compose pull
             docker compose up -d --force-recreate
             docker logout registry.digitalocean.com
-
+  
+  # Bckend Deploy to Droplet
+  backend-deploy:
+    needs: backend-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH to droplet and deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DROPLET_IP_BACKEND }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_KEY }}
+          script: |
+            cd /srv/app
+            echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_TOKEN }} --password-stdin registry.digitalocean.com
+            docker compose pull
+            docker compose up -d --force-recreate
+            docker logout registry.digitalocean.com

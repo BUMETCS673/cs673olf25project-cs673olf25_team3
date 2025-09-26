@@ -1,5 +1,13 @@
-// AI-generated: 60%
-// Human-written: 40%
+/*
+
+AI-generated: 60% (Tool: ChatGPT, Cursor; primarily UI boilerplate with MUI components, state management, and form structure)
+Human-written: 40% (logic: handleLogin, useEffect redirect, integration with loginUser endpoint and AuthContext, localStorage handling, error display)
+
+Notes:
+- Most MUI component structure, styling, and state setup were AI-assisted.
+- Human contributions: connecting form to backend login, handling login result, storing tokens, navigating on success, and error handling.
+
+*/
 import { useEffect, useState } from "react";
 import { Card, CardContent, Typography, TextField, Button, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";

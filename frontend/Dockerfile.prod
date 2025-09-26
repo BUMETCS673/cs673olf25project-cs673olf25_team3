@@ -1,0 +1,39 @@
+# ----------------------------
+# Stage 1: Build the app
+# ----------------------------
+FROM node:20.19-alpine AS builder
+
+WORKDIR /app
+
+# Copy package.json and lockfile
+COPY package*.json ./
+
+# Install dependencies (production mode disables devDeps in later stage)
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build the app
+RUN npm run build
+
+
+# ----------------------------
+# Stage 2: Serve with nginx
+# ----------------------------
+FROM nginx:alpine
+
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built app from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx config (optional)
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
