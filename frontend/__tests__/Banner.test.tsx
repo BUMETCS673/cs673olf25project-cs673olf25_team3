@@ -1,7 +1,6 @@
 import App from '../src/App'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import Banner from '../src/components/Banner';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../src/auth/AuthContext';
 
