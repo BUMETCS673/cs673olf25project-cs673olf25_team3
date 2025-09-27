@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, Mock } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import '@testing-library/jest-dom';
 import { BrowserRouter } from "react-router-dom";
 import SignUp from "../src/auth/Signup";
 import { AuthProvider } from "../src/auth/AuthContext";
