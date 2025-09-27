@@ -2,6 +2,7 @@
 
 const Logo = (props) => (
   <svg
+    data-testid="planningjam-logo"
     xmlns="http://www.w3.org/2000/svg"
     width={55.361}
     height={51.155}
