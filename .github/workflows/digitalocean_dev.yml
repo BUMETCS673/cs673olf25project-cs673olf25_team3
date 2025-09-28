@@ -50,35 +50,57 @@ jobs:
         python-version: [3.13]
 
     steps:
-      - uses: actions/checkout@v4
+      # - uses: actions/checkout@v4
       
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
+      # - name: Set up Python ${{ matrix.python-version }}
+      #   uses: actions/setup-python@v3
+      #   with:
+      #     python-version: ${{ matrix.python-version }}
       
-      - name: Install Dependencies
+      # - name: Install Dependencies
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install -r requirements.txt
+      
+      # - name: Create .env file from environment variables
+      #   run: |
+      #     echo "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+      #     echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+      #     echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+      #     echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}" >> .env
+      #     echo "MONGO_DATABASE_HOST=${{ secrets.MONGO_DATABASE_HOST }}" >> .env
+      #     echo "MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }}" >> .env
+      #     echo "MONGO_DATABASE_USER=${{ secrets.MONGO_DATABASE_USER }}" >> .env
+      #     echo "MONGO_DATABASE_PWD=${{ secrets.MONGO_DATABASE_PWD }}" >> .env
+      #     echo "MONGO_DATABASE_PORT=${{ secrets.MONGO_DATABASE_PORT }}" >> .env
+      #     echo "MONGO_DATABASE_TLS=${{ secrets.MONGO_DATABASE_TLS }}" >> .env
+      #     echo "MONGO_DATABASE_SSL=${{ secrets.MONGO_DATABASE_SSL }}" >> .env
+      
+      # - name: Run Tests
+      #   run: |
+      #     pytest -v
+
+      # Build the Docker image for testing
+      - name: Build Docker image
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      
-      - name: Create .env file from environment variables
+          docker build --target test -t backend-test .
+
+      # Pass environment variables to the container
+      - name: Run tests in Docker
         run: |
-          echo "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
-          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
-          echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}" >> .env
-          echo "MONGO_DATABASE_HOST=${{ secrets.MONGO_DATABASE_HOST }}" >> .env
-          echo "MONGO_DATABASE_NAME=${{ secrets.MONGO_DATABASE_NAME }}" >> .env
-          echo "MONGO_DATABASE_USER=${{ secrets.MONGO_DATABASE_USER }}" >> .env
-          echo "MONGO_DATABASE_PWD=${{ secrets.MONGO_DATABASE_PWD }}" >> .env
-          echo "MONGO_DATABASE_PORT=${{ secrets.MONGO_DATABASE_PORT }}" >> .env
-          echo "MONGO_DATABASE_TLS=${{ secrets.MONGO_DATABASE_TLS }}" >> .env
-          echo "MONGO_DATABASE_SSL=${{ secrets.MONGO_DATABASE_SSL }}" >> .env
-      
-      - name: Run Tests
-        run: |
-          pytest -v
+          docker run --rm \
+            -e SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" \
+            -e ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}" \
+            -e DEBUG="${{ secrets.DEBUG }}" \
+            -e CORS_ORIGINS="${{ secrets.CORS_ORIGINS }}" \
+            -e MONGO_DATABASE_HOST="${{ secrets.MONGO_DATABASE_HOST }}" \
+            -e MONGO_DATABASE_NAME="${{ secrets.MONGO_DATABASE_NAME }}" \
+            -e MONGO_DATABASE_USER="${{ secrets.MONGO_DATABASE_USER }}" \
+            -e MONGO_DATABASE_PWD="${{ secrets.MONGO_DATABASE_PWD }}" \
+            -e MONGO_DATABASE_PORT="${{ secrets.MONGO_DATABASE_PORT }}" \
+            -e MONGO_DATABASE_TLS="${{ secrets.MONGO_DATABASE_TLS }}" \
+            -e MONGO_DATABASE_SSL="${{ secrets.MONGO_DATABASE_SSL }}" \
+            backend-test
 
   # Frontend Build
   frontend-build:
