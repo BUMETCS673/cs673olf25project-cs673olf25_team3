@@ -359,6 +359,18 @@ docker run --rm planningjam-api-test
  
 ---
 
+**Running frontend tests**
+To run tests on the frontend you can do it locally or through docker. You must cd into the frontend folder first
+Locally:
+```
+npm test
+```
+Docker: 
+```
+docker build -t planningjam-test --target test .
+docker run planningjam-test
+```
+
 ## Essential Roadmap
 - Application (front end and backend) up
 - User Authentication
