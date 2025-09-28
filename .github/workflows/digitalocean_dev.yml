@@ -83,7 +83,7 @@ jobs:
       # Build the Docker image for testing
       - name: Build Docker image
         run: |
-          docker build --target test -t backend-test .
+          docker build -f ./Dockerfile.prod --target test -t backend-test .
 
       # Pass environment variables to the container
       - name: Run tests in Docker
