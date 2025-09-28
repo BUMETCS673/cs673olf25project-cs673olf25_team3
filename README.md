@@ -14,6 +14,7 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
   - [Backend Development](#backend-development)
   - [Database](#database)
   - [Docker](#docker)
+  - [Testing](#running-tests)
 - [Essential Roadmap](#essential-roadmap)
 - [Desirable Roadmap](#desirable-roadmap)
 - [Optional Roadmap](#optional-roadmap)
@@ -329,6 +330,33 @@ docker run -d --name planningjam-backend -p 5173:5173 planningjam-backend
 
 The application should then be accessible at http://localhost:8000 .
 
+### Running Tests
+
+#### Running backend tests
+
+The backend tests files are located in the `/backend/api/tests` directory. A test file must have the following naming structure:
+```
+tests.py, test_*.py, *_tests.py, or *_test.py
+```
+
+To run tests on the backend locally, the working directory must be in the backend directory. 
+
+```
+# to run all tests
+pytest -v
+
+# to run a specific test file
+pytest api/tests/<test_file>.py -v
+```
+
+To run the test within docker, 
+
+```
+docker build -t planningjam-api-test --target test .
+docker run --rm planningjam-api-test
+```
+
+ 
 ---
 
 ## Essential Roadmap
