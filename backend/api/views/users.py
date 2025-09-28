@@ -1,9 +1,10 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, renderer_classes, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.renderers import JSONRenderer
 from django.contrib.auth import get_user_model
-from .serializer import UserRegistrationSerializer, UserSerializer
+from ..serializers.auth_serializer import UserRegistrationSerializer, UserSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -13,6 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 User = get_user_model()
 
 @api_view(['POST'])
+@renderer_classes([JSONRenderer])
 @permission_classes([AllowAny])
 def register_user(request):
     """
@@ -35,6 +37,7 @@ def register_user(request):
 
 
 @api_view(['GET'])
+@renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
     """
