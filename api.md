@@ -28,7 +28,7 @@ Authorization: Bearer <access-token>
 ```
 
 ### 1. Obtain Token Pair
-**Endpoint:**  `POST /api/token/`
+**Endpoint:**  `POST /token/`
 
 **Description:**  
 Authenticate with username and password to receive an **access token** and **refresh token**.
@@ -50,7 +50,7 @@ Authenticate with username and password to receive an **access token** and **ref
 ```
 
 ### 2. Refresh Access Token
-**Endpoint:**  `POST /api/token/refresh`
+**Endpoint:**  `POST /token/refresh`
 
 **Description**:
 Use a refresh token to get a new access token when the old one expires.
@@ -274,7 +274,7 @@ Update the plan title
 
 ### 5. Delete a Plan
 
-**Endpoint:** `DELETE /plans/:plan_id/edit`
+**Endpoint:** `DELETE /plans/:plan_id/delete`
 
 **Description:** Deletes a plan with a given id.  
 
