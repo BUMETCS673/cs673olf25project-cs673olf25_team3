@@ -13,7 +13,6 @@ urlpatterns = [
     path('profile/', users.get_user_profile, name='get_user_profile'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('plans/add', plans.create_plan, name='create-plan'),
 
     # explicit list path expected by tests (/api/friends/list/)
     path('friends/list/', list_friends, name='list_friends_list'),
@@ -24,4 +23,12 @@ urlpatterns = [
     path('friends/respond/<str:request_id>/', respond_to_friend_request, name='respond_to_friend_request'),
     path('friends/', list_friends, name='list_friends'),
     path('friends/remove/<str:friend_id>/', remove_friend, name='remove_friend'),
+
+    # Plans endpoints
+    path('plans/', plans.get_plans, name='get-plans'),
+    path('plans/add', plans.create_plan, name='create-plan'),
+    path('plans/<str:plan_id>', plans.get_plans_by_id, name='get-plans-by-id'),
+    path('plans/<str:plan_id>/edit', plans.update_plan, name='update-plan'),
+    path('plans/<str:plan_id>/delete', plans.delete_plan, name='delete-plan'),
+
 ]
