@@ -16,7 +16,10 @@ from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 import logging
 logger = logging.getLogger(__name__)
 
-plans_collection = get_collection('plans')
+#had trouble with broken makemigrations, needed to put this inside a view function so that i can test
+def get_plans_collection():
+    plans_collection = get_collection('plans')
+    return get_collection('plans')
 
 @api_view(['POST'])
 @renderer_classes([JSONRenderer])
