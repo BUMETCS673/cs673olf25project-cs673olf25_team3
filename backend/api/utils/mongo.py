@@ -9,4 +9,5 @@ def get_collection(collection: str):
     Return a MongoDB collection by name from the default connection.
     """
     db = connections['default'].get_database()
-    return db[collection]
+    # return db[collection]
+    return db.get_collection(collection)

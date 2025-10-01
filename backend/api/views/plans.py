@@ -58,4 +58,72 @@ def create_plan(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def get_plans(request):
+    plans = list(plans_collection.find({}))
 
+    # change plans ids to string
+    for plan in plans:
+        plan["_id"] = str(plan["_id"])
+
+    return Response(plans, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def get_plans_by_id(request, plan_id):
+    try:
+        plan = plans_collection.find_one({"_id": ObjectId(plan_id)})
+    except Exception:
+        return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if not plan:
+        return Response({"error": "Plan not found"},status=status.HTTP_404_NOT_FOUND )
+    
+    # Santize the id
+    plan["_id"] = str(plan["_id"])
+
+    return Response({"data": plan}, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def update_plan(request, plan_id):
+    try:
+        id = ObjectId(plan_id)  # Convert string ID to ObjectId
+    except Exception:
+        return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    result = plans_collection.update_one(
+        {"_id": id},
+        {"$set": request.data}
+    )
+
+    if result.matched_count == 0:
+        return Response({"error": "Plan not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    plan = plans_collection.find_one({"_id": id})
+    plan["_id"] = str(plan["_id"])  # convert ObjectId to string
+
+    return Response({"data": plan}, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def delete_plan(request, plan_id):
+    try:
+        id = ObjectId(plan_id)
+    except Exception:
+        return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    result = plans_collection.delete_one({"_id": id})
+
+    if result.deleted_count == 0:
+        return Response({"error": "Plan not found"},status=status.HTTP_404_NOT_FOUND )
+
+    return Response({"message": f"Event {id} deleted successfully"}, status=status.HTTP_200_OK)
