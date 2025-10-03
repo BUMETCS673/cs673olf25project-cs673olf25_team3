@@ -1,6 +1,6 @@
 import React from "react";
-import FriendsList from "./FriendsList";
-import User from './util.js';
+import FriendsList from "./FriendsList.jsx";
+import User from '../util.js';
 
 export default function Friends() {
     var myself =  new User("David");
@@ -24,6 +24,11 @@ export default function Friends() {
 
       <div>
         <h2>Add Friends:</h2>
+        <FriendsList notFriends={notFriends}></FriendsList>
+      </div>
+
+      <div>
+        <h2>Friend Requests:</h2>
         <FriendsList notFriends={notFriends}></FriendsList>
       </div>
     </div>

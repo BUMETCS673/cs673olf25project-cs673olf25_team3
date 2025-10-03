@@ -1,5 +1,5 @@
 import React from "react";
-import './util.js';
+import '../util.js';
 
 
 export default function FriendsList({friends}) {
