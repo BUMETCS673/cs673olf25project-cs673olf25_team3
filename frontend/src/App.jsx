@@ -19,6 +19,7 @@ import Logout from './auth/Logout'
 import Home from './components/Home'
 import Banner from './components/Banner'
 import AuthProtectedRoute from './auth/AuthProtectedRoute'
+import Friends from './components/Friends'
 
 function App() {
   return (
@@ -36,7 +37,13 @@ function App() {
                 <Home />
               </AuthProtectedRoute>
             }
-          />        
+          />     
+          <Route path="/friends" element={
+            <AuthProtectedRoute>
+              <Friends />
+            </AuthProtectedRoute>
+            } 
+          />   
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/signup" element={<SignUp />} />
