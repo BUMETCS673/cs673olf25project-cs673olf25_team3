@@ -11,7 +11,17 @@ Notes:
 */
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-async function registerUser({ username, email, password, confirmPassword }) {
+async function registerUser({
+  username,
+  email,
+  password,
+  confirmPassword,
+}: {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}) {
   try {
     const response = await fetch(`${baseUrl}/api/register/`, {
       method: "POST",
@@ -48,7 +58,7 @@ async function registerUser({ username, email, password, confirmPassword }) {
 }
 
 
-async function loginUser({ username, password }) {
+async function loginUser({ username, password }: { username: string; password: string }) {
 
   try {
     const response = await fetch(`${baseUrl}/api/token/`, {
