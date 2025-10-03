@@ -1,20 +1,21 @@
 """
-Friend model for managing user-to-user relationships in the Friends API
+api.models.friends_models
 
+Friend model definition for the Friends API
 
-Represents a friend request between two users with pending, accepted, and
-rejected states. Includes metadata (timestamps, indexes, unique
-constraints) and helper methods for updating request status
+Defines a simple relationship between two users (sender and receiver),
+with support for pending, accepted, and rejected states. Includes
+timestamps, constraints to prevent duplicates, and helper methods for
+accepting or rejecting requests
 """
-
-# Framework-generated: 0%
-# Human-written: 80%
-# AI-generated: 20%
-#   - Force authentication https://chatgpt.com/share/68d9876b-6204-8008-a5bf-c8f8d70faf31 
+# Framework-generated: 10%
+# Human-written: 60%
+# AI-generated: 30%
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+
 
 class Friend(models.Model):
     STATUS_CHOICES = (
@@ -23,8 +24,9 @@ class Friend(models.Model):
         ('rejected', 'Rejected')
     )
 
+
     # store actual user references so tests can create Friend(sender=user, receiver=user)
-    # Temporary null=True to avoid interactive migration prompts. Might need to backfill then remove null=True and enforce non-null constraint.
+    # Temporary null=True to avoid interactive migration prompts. Might need to backfill then remove null=True and enforce non-null constraint
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='friend_requests_sent',
@@ -38,7 +40,10 @@ class Friend(models.Model):
         null=True, blank=True,
     )
 
+    # Tracks lifecycle of the friend request (default: pending)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    # Created timestamp set once, updated_at auto-updates on save
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -52,6 +57,7 @@ class Friend(models.Model):
         ]
 
     def __str__(self):
+        # Helpful string for admin/debugging (ex. "abbott -> costello (pending)")
         return f"{self.sender} -> {self.receiver} ({self.status})"
 
     def accept(self):
