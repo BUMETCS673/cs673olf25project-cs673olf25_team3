@@ -14,6 +14,7 @@ PlanningJam is a social app designed to make organizing hangouts simple and fun.
   - [Backend Development](#backend-development)
   - [Database](#database)
   - [Docker](#docker)
+  - [Testing](#running-tests)
 - [Essential Roadmap](#essential-roadmap)
 - [Desirable Roadmap](#desirable-roadmap)
 - [Optional Roadmap](#optional-roadmap)
@@ -61,6 +62,15 @@ Install dependencies within the `frontend` directory
 cd frontend
 npm install
 ```
+
+
+In the `frontend` directory, copy the contents in the `.env.example` file into a new `.env` file. 
+Set the VITE_BASE_URL to be the api base url, which will likely be http://localhost:8000/. If not, check where the backend points to later.
+
+    ```
+    VITE_API_BASE_URL=http://localhost:8000
+    ```
+
 
 #### Running the Frontend
 
@@ -152,11 +162,11 @@ All backend development should be done in the `backend/` directory. To setup the
 
 1. Configure the MongoDB Connection
 
-    In the `.env` file, add the MongoDB configurations
+    In the `backend/.env` file, add the MongoDB host url and credentials.
 
     i.e. 
     ```
-    MONGO_DATABASE_HOST=mongodb+srv://cluster_name.example.mongodb.net
+    MONGO_HOST=mongodb://localhost
     MONGO_DATABASE_NAME=database_name
     MONGO_DATABASE_USER=database_user
     MONGO_DATABASE_PWD=database_password
@@ -165,29 +175,17 @@ All backend development should be done in the `backend/` directory. To setup the
     MONGO_DATABASE_SSL=true #set false if using a local mongodb
     ```
 
-    *NOTE:* 
-    - If the database name does not exists within the MongoDB cluster, a new database will be created by that name.
+    *Note:* If both the backend and the MongoDB are both running on docker containers, the host url for the database will not be accessible via `localhost`. Connect the MongoDB container to the docker network `planjam-network` if its not already connected, then use the container name in place of `localhost`, i.e. `mongodb://mongodb`
 
-    - If both the backend and the MongoDB are running on docker containers, the host url for the database will not be accessible via `localhost`. An IP Address from the docker network or its contianer name will be needed instead. To obtain the IP address of the MongoDB container, run the following: 
-
-        ```
-        docker network inspect planjam-network
-        ```
+    ```
+    docker network connect planjam-network <mongodb_container_name>
+    ```
 
 2. Verify the connection is working by running the server. 
 
     ```
     python manage.py migrate
     ```
-
-##### Database Migration
-
-After creating new model in the application, create a migration for the model.
-```
-python manage.py makemigrations <app_name>
-python manage.py migrate
-```
-For the api application, set the `app_name` to api
 
 #### Running the Backend
 
@@ -332,7 +330,46 @@ docker run -d --name planningjam-backend -p 5173:5173 planningjam-backend
 
 The application should then be accessible at http://localhost:8000 .
 
+### Running Tests
+
+#### Running backend tests
+
+The backend tests files are located in the `/backend/api/tests` directory. A test file must have the following naming structure:
+```
+tests.py, test_*.py, *_tests.py, or *_test.py
+```
+
+To run tests on the backend locally, the working directory must be in the backend directory. 
+
+```
+# to run all tests
+pytest -v
+
+# to run a specific test file
+pytest api/tests/<test_file>.py -v
+```
+
+To run the test within docker, 
+
+```
+docker build -t planningjam-api-test --target test .
+docker run --rm planningjam-api-test
+```
+
+ 
 ---
+
+**Running frontend tests**
+To run tests on the frontend you can do it locally or through docker. You must cd into the frontend folder first
+Locally:
+```
+npm test
+```
+Docker: 
+```
+docker build -t planningjam-test --target test .
+docker run planningjam-test
+```
 
 ## Essential Roadmap
 - Application (front end and backend) up
