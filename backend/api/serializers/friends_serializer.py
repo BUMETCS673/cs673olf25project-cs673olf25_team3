@@ -1,5 +1,20 @@
+"""
+api.serializers.friends
+
+Serializer for the Friend model used by the Friends API
+
+- Wraps Friend model into JSON-friendly representation
+- Uses custom ObjectIdField for Mongo-style IDs
+- Exposes sender_id and receiver_id instead of nested User objects
+- Provides explicit create/update methods for controlled persistence
+"""
+
+# Framework-generated: 20%
+# Human-written: 60%
+# AI-generated: 20%
+
 from rest_framework import serializers
-from api.models import Friend
+from api.models.friends_models import Friend
 from .fields import ObjectIdField
 
 class FriendSerializer(serializers.ModelSerializer):
