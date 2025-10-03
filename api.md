@@ -359,13 +359,19 @@ curl -s http://localhost:8000/api/users/<user_id>/ \
   -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
 ```
 
-### How to test quickly (dev tips)
-- Seed dev users (optional): `cd backend && python manage.py seed_dev_users` — creates `rachel.green` and `ross.geller` with password `password123`.
-- If `is_friend` and `request_status` are not present, use the friends endpoints to determine relationship state:
-  - `GET /friends/` returns friends, incoming_requests, outgoing_requests.
-  - `POST /friends/request/:user_id/` to send a request.
-  - `POST /friends/respond/:request_id/` with `{ "action": "accept" }` or `{ "action": "reject" }` to respond.
+4) Send a friend request to another user (replace <recipient_id>)
+```bash
+curl -s -X POST http://localhost:8000/api/friends/request/<recipient_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
 
+5) Respond to a friend request (accept)
+```bash
+curl -s -X POST http://localhost:8000/api/friends/respond/<request_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"accept"}' | jq
+```
 
 
 ## Friend Requests
