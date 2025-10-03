@@ -22,8 +22,8 @@ urlpatterns = [
 
     # RSVP endpoints
     path('rsvp/add', rsvp.create_rsvp, name='create-rsvp'),
-    path('rsvp/<str:plan_id>', rsvp.get_rsvp_by_plan_id, name='get-rsvp-by-plan-id'),
-    path('rsvp/<str:user_id>', rsvp.get_rsvp_by_user_id, name='get-rsvp-by-user-id'),
+    path('rsvp/plan/<str:plan_id>', rsvp.get_rsvp_by_plan_id, name='get-rsvp-by-plan-id'),
+    path('rsvp/user/<str:user_id>', rsvp.get_rsvp_by_user_id, name='get-rsvp-by-user-id'),
     path('rsvp/<str:rsvp_id>/delete', rsvp.delete_rsvp_by_id, name='delete-rsvp-by-id'),
-    path('rsvp/<str:plan_id>/delete/plan', rsvp.delete_rsvp_by_plan_id, name='delete-rsvp-by-plan-id'),
+    path('rsvp/plan/<str:plan_id>/delete', rsvp.delete_rsvp_by_plan_id, name='delete-rsvp-by-plan-id'),
 ]
