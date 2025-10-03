@@ -338,6 +338,38 @@ Authorization: Bearer <access-token>
 {"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"}
 ```
 
+{ "detail": "Not found." }
+```
+
+### Quick curl examples (copy/paste)
+- Obtain token (use seeded user or create one via /api/register/):
+```bash
+curl -s -X POST http://localhost:8000/api/token/ \
+  -H "Content-Type: application/json" \
+  -d '{"username":"rachel.green","password":"password123"}' | jq
+```
+- List users:
+```bash
+curl -s http://localhost:8000/api/users/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+- Get user by id:
+```bash
+curl -s http://localhost:8000/api/users/<user_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+
+### How to test quickly (dev tips)
+- Seed dev users (optional): `cd backend && python manage.py seed_dev_users` — creates `rachel.green` and `ross.geller` with password `password123`.
+- If `is_friend` and `request_status` are not present, use the friends endpoints to determine relationship state:
+  - `GET /friends/` returns friends, incoming_requests, outgoing_requests.
+  - `POST /friends/request/:user_id/` to send a request.
+  - `POST /friends/respond/:request_id/` with `{ "action": "accept" }` or `{ "action": "reject" }` to respond.
+
+### Recommendation for frontend
+- Prefer `GET /users/` to populate user lists. If you need relationship state in the list (for action buttons), ask the backend to include `is_friend` and `request_status` — I can implement that if you want. Otherwise, fetch `/friends/` once and map states on the client.
+
+
 ## Friend Requests
 
 These endpoints allow creating and responding to friend requests. The frontend uses these to send requests and accept/reject them.
