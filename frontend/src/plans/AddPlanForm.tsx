@@ -1,3 +1,16 @@
+/*
+AI-generated: 55% (Tool: ChatGPT; primarily MUI form layout, TextField, DateTimePicker components, Box layout, button styling, Typography headers, and spacing)
+Human-written: 45% (logic: handleChange for form state, onSubmit for calling handleSubmit, error parsing and display, pre-filling form on edit, conditional navigation on success, and managing nested location fields)
+
+Notes:
+
+The structure, styling, and component usage were mostly AI-assisted.
+
+Human contributions include the core form logic, dynamic field updates, handling submission with async API calls, error handling, and navigation control.
+
+Validation error mapping from backend responses is entirely human-authored.
+*/
+
 import { useState, useEffect } from "react";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -224,7 +237,6 @@ export default function AddPlanForm({
           <Button
           variant="outlined"
           onClick={() => {
-            console.log('what the hell')
             navigate('/home')
           }}
         >

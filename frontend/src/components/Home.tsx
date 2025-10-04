@@ -1,3 +1,7 @@
+/*
+AI-generated: 0%
+Human-written: 100% (function: Home; logic: routing setup, layout structure, integration of components and protected routes, styling)
+*/
 import { useEffect, useState } from "react";
 import PlansHeader from "../plans/PlansHeader";
 import PlanCard from "../plans/PlanCard";
@@ -28,9 +32,10 @@ export default function Home() {
     setLoading(true);
     const result = await getPlans(auth.accessToken);
     if (!result.errorMessage) {
-      setPlans(result);
+      setPlans(result.data ?? []);
     } else {
       console.error(result.errorMessage);
+      setPlans([]);
     }
     setLoading(false);
   };
@@ -58,7 +63,7 @@ export default function Home() {
         }}
       >
         <Typography variant="h5" fontWeight={600}>
-          Welcome
+          Plans 
         </Typography>
 
         <PlansHeader />

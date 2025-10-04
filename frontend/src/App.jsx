@@ -1,6 +1,6 @@
 /*
 AI-generated: 0%
-Human-written: 100% (function: App; logic: routing setup, layout structure, integration of components and protected routes)
+Human-written: 100% (function: App; logic: routing setup, layout structure, integration of components and protected routes, styling)
 
 Notes:
 
