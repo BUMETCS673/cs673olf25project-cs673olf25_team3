@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import PlansHeader from "../plans/PlansHeader";
 import PlanCard from "../plans/PlanCard";
 import {
@@ -10,6 +9,8 @@ import {
   MenuItem,
   Select,
   Typography,
+  Divider,
+  Stack,
 } from "@mui/material";
 import { getPlans } from "../plans/endpoints/getPlan";
 import { useAuth } from "../auth/AuthContext";
@@ -20,7 +21,6 @@ export default function Home() {
   const [filter, setFilter] = useState("your");
 
   const { auth } = useAuth();
-  const navigate = useNavigate();
 
   // Load plans from API
   const loadPlans = async () => {
@@ -39,7 +39,6 @@ export default function Home() {
     loadPlans();
   }, [auth.accessToken]);
 
-  // TODO: add correct logic once API is working
   const filteredPlans = plans.filter((plan) => {
     if (filter === "your") return true;
     if (filter === "friends") return true;
@@ -47,14 +46,28 @@ export default function Home() {
   });
 
   return (
-    <>
-      {/* PlansHeader */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", pt: 2, pr: 2 }}>
-        <PlansHeader setShowForm={() => navigate("/plans/add")} />
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      {/* Header section */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
+        }}
+      >
+        <Typography variant="h5" fontWeight={600}>
+          Welcome
+        </Typography>
+
+        <PlansHeader />
       </Box>
 
+      <Divider />
+
       {/* Filter Dropdown */}
-      <Box sx={{ mt: 2, mb: 2, maxWidth: 200, ml: 2 }}>
+      <Box sx={{ maxWidth: 240 }}>
         <FormControl fullWidth>
           <InputLabel id="plan-filter-label">Filter Plans</InputLabel>
           <Select
@@ -71,21 +84,35 @@ export default function Home() {
       </Box>
 
       {/* Plan Cards */}
-      <Box sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: 2,
+          mt: 1,
+        }}
+      >
         {loading ? (
-          <CircularProgress sx={{ mt: 4 }} />
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <CircularProgress />
+          </Box>
         ) : filteredPlans.length > 0 ? (
-          filteredPlans.map((plan) => (
-            <PlanCard
-              key={plan._id}
-              plan={plan}
-              onUpdate={loadPlans} // refresh after edit or delete
-            />
-          ))
+          <Stack spacing={2}>
+            {filteredPlans.map((plan) => (
+              <PlanCard
+                key={plan._id}
+                plan={plan}
+                onUpdate={loadPlans} // refresh after edit or delete
+              />
+            ))}
+          </Stack>
         ) : (
-          <Typography sx={{ mt: 4 }}>No plans available.</Typography>
+          <Typography sx={{ mt: 4, textAlign: "center" }}>
+            No plans available.
+          </Typography>
         )}
       </Box>
-    </>
+    </Box>
   );
 }

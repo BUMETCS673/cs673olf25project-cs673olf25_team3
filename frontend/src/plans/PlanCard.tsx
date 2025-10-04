@@ -47,7 +47,7 @@ export default function PlanCard({ plan, onUpdate }: { plan: Plan; onUpdate?: ()
 
   return (
     <>
-      <Card sx={{ mb: 2, borderRadius: 2, boxShadow: 3, width: "50%" }}>
+      <Card sx={{ mb: 2, borderRadius: 2, boxShadow: 3, width: "80%" }}>
         <CardHeader
           title={plan.title}
           subheader={`${new Date(plan.start_time).toLocaleString()} - ${new Date(plan.end_time).toLocaleString()}`}

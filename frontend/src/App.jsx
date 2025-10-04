@@ -1,5 +1,4 @@
 /*
-
 AI-generated: 0%
 Human-written: 100% (function: App; logic: routing setup, layout structure, integration of components and protected routes)
 
@@ -24,52 +23,85 @@ import AddPlanPage from './plans/AddPlanPage'
 
 function App() {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <div>
+    <div className="app-container" style={styles.appContainer}>
+      {/* Sticky top banner */}
+      <header style={styles.banner}>
         <Banner />
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route
-            path="/home"
-            element={
-              <AuthProtectedRoute>
-                <Home />
-              </AuthProtectedRoute>
-            }
-          />
+      </header>
 
-          {/* Add Plan */}
-          <Route
-            path="/plans/add"
-            element={
-              <AuthProtectedRoute>
-                <AddPlanPage />
-              </AuthProtectedRoute>
-            }
-          />
+      {/* Main content area */}
+      <main style={styles.main}>
+        <div style={styles.contentWrapper}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route
+              path="/home"
+              element={
+                <AuthProtectedRoute>
+                  <Home />
+                </AuthProtectedRoute>
+              }
+            />
 
-          {/* Edit Plan */}
-          <Route
-            path="/plans/edit/:planId"
-            element={
-              <AuthProtectedRoute>
-                <AddPlanPage editMode /> 
-              </AuthProtectedRoute>
-            }
-          />
+            {/* Add Plan */}
+            <Route
+              path="/plans/add"
+              element={
+                <AuthProtectedRoute>
+                  <AddPlanPage />
+                </AuthProtectedRoute>
+              }
+            />
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/signup" element={<SignUp />} />
+            {/* Edit Plan */}
+            <Route
+              path="/plans/edit/:planId"
+              element={
+                <AuthProtectedRoute>
+                  <AddPlanPage editMode />
+                </AuthProtectedRoute>
+              }
+            />
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </div>
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/signup" element={<SignUp />} />
+
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </div>
+      </main>
     </div>
   )
 }
 
+const styles = {
+  appContainer: {
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  banner: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 1000,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+  },
+  main: {
+    flexGrow: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '2rem',
+  },
+  contentWrapper: {
+    width: '100%',
+    maxWidth: '1000px',
+    borderRadius: '12px',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+    padding: '2rem',
+  },
+}
+
 export default App
+
 
