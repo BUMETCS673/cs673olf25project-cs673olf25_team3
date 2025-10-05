@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { getUsers } from "./endpoints/getUsers.js";
 import { getFriends } from "./endpoints/getFriends.js";
-import { GetUserByID } from "./endpoints/getUserByID.js";
 import { SendFriendRequest } from "./endpoints/sendFriendRequest.js";
 import { DeleteFriend } from "./endpoints/deleteFriend.js";
 import { RespondToFriendRequest } from "./endpoints/respondToFriendRequest.js";
