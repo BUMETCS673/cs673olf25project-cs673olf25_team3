@@ -382,10 +382,14 @@ These endpoints allow creating and responding to friend requests. The frontend u
 **Endpoint:** `POST /friends/request/:user_id/`
 
 **Description:** Send a friend request to the user with id `user_id`. Authentication required.
-
 **Response Example:**
 ```json
-{"message": "Friend request sent"}
+{
+  "id": "68e2bc8d390fe44b0f398f4e",
+  "sender": "68cd793ca4a36f574952921b",
+  "receiver": "68d2bb9c8b1d2c3e4f5a6b7",
+  "status": "pending"
+}
 ```
 
 ### 2. Respond to friend request
@@ -400,7 +404,10 @@ These endpoints allow creating and responding to friend requests. The frontend u
 
 **Response Example:**
 ```json
-{"message": "Friend request accepted"}
+{
+  "id": "68e2bc8d390fe44b0f398f4e",
+  "status": "accepted"
+}
 ```
 
 ### 3. List friends / requests
@@ -411,6 +418,7 @@ These endpoints allow creating and responding to friend requests. The frontend u
 **Response Example:**
 ```json
 {
+  "current_user_id": "68e2bc8d390fe44b0f398f4e",
   "friends": [ {"id": "2", "username": "bob"} ],
   "incoming_requests": [ {"id": "3", "username": "carol"} ],
   "outgoing_requests": [ {"id": "4", "username": "dave"} ]
@@ -423,6 +431,4 @@ These endpoints allow creating and responding to friend requests. The frontend u
 **Description:** Remove an existing friend relationship.
 
 **Response Example:**
-```json
-{"message": "Friend removed"}
-```
+- HTTP 204 No Content (empty response body)
