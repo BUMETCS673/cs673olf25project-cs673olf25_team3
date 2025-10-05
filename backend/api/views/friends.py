@@ -83,21 +83,30 @@ def list_friends(request):
     for f in friends_qs:
         # Figure out which user is "the other friend" in the relationship
         other = f.receiver if f.sender == user else f.sender
-        friends.append({'id': str(f.pk), 'friend_id': str(other.pk), 'status': f.status})
+        # Provide minimal public fields (id and username) per API contract
+        friends.append({'id': str(other.pk), 'username': getattr(other, 'username', '')})
 
     # pending sent and pending received lists
     pending_sent_qs = Friend.objects.filter(sender=user, status='pending')
     pending_received_qs = Friend.objects.filter(receiver=user, status='pending')
 
-    # Normalize to JSON-serializable dicts
-    pending_sent = [{'id': str(p.pk), 'receiver_id': str(p.receiver.pk), 'status': p.status} for p in pending_sent_qs]
-    pending_received = [{'id': str(p.pk), 'sender_id': str(p.sender.pk), 'status': p.status} for p in pending_received_qs]
+    # Normalize pending lists to minimal public shape (id and username)
+    outgoing_requests = [
+        {'id': str(p.pk), 'username': getattr(p.receiver, 'username', '')} for p in pending_sent_qs
+    ]
+    incoming_requests = [
+        {'id': str(p.pk), 'username': getattr(p.sender, 'username', '')} for p in pending_received_qs
+    ]
 
-    return Response({
+    # Return the shape defined in api.md while keeping old keys for compatibility
+    response_payload = {
+        'current_user_id': str(user.pk),
         'friends': friends,
-        'pending_sent': pending_sent,
-        'pending_received': pending_received
-    }, status=status.HTTP_200_OK)
+        'incoming_requests': incoming_requests,
+        'outgoing_requests': outgoing_requests,
+    }
+
+    return Response(response_payload, status=status.HTTP_200_OK)
 
 
 # Remove a friend or cancel a friend request
