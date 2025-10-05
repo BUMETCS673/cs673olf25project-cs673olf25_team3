@@ -1,0 +1,49 @@
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+async function addUser(
+  planData: {
+    title: string;
+    description: string;
+    location: {
+      name: string;
+      address1: string;
+      city: string;
+      state: string;
+      zipcode: string;
+    };
+    start_time: string;
+    end_time: string;
+  },
+  accessToken: string
+) {
+  try {
+    const response = await fetch(`${baseUrl}/api/plans/add`, {
+      method: "POST", 
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(planData),
+    });
+    console.log('response')
+
+    const data = await response.json();
+
+if (!response.ok) {
+  let errorMessage: any;
+
+  if (data && typeof data === "object") {
+    errorMessage = data;
+  } else {
+    errorMessage = data?.message || data?.error || data?.detail || "Failed to add plan";
+  }
+
+  return { errorMessage };
+}
+    return data;
+  } catch (err) {
+    return { errorMessage: "Network error. Please try again." };
+  }
+}
+
+export { addPlan };

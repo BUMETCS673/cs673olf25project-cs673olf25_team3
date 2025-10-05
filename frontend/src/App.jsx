@@ -19,7 +19,7 @@ import Logout from './auth/Logout'
 import Home from './components/Home'
 import Banner from './components/Banner'
 import AuthProtectedRoute from './auth/AuthProtectedRoute'
-import Friends from './components/Friends'
+import Friends from './friends/Friends'
 
 function App() {
   return (
