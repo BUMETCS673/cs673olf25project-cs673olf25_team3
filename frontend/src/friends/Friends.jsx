@@ -14,14 +14,6 @@ import { Button } from "@mui/material";
 
 export default function Friends() {
 
-  //   const friends = [].filter(user =>
-  //   user.isFriends(myself)
-  // );
-
-  // const notFriends = [].filter(user =>
-  //   !user.isFriends(myself)
-  // );
-
   const { auth } = useAuth();
   const [allUsers, setAllUsers] = useState([]);
   const [unconnectedUsers, setUnconnectedUsers] = useState([])
@@ -123,7 +115,7 @@ export default function Friends() {
 
       <div>
         <h2>Add Friends:</h2>
-        <FriendsList friends={allUsers}  variant={"send"}></FriendsList>
+        <FriendsList friends={unconnectedUsers}  variant={"send"}></FriendsList>
       </div>
 
       <div>
