@@ -11,12 +11,12 @@ Notes:
 */
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-async function deleteFriend(
+async function DeleteFriend(
   userID:String,
   accessToken: String
 ) {
   try {
-    const response = await fetch(`${baseUrl}/api/friends/remove/${userID}`, {
+    const response = await fetch(`${baseUrl}/api/friends/remove/${userID}/`, {
       method: "DELETE", 
       headers: {
         // "Content-Type": "application/json",
@@ -43,4 +43,4 @@ if (!response.ok) {
   }
 }
 
-export { deleteFriend };
+export { DeleteFriend };

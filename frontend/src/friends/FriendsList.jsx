@@ -1,29 +1,36 @@
 import React from "react";
 import '../util.js';
 import { Button } from "@mui/material";
+import { SendFriendRequest } from "./endpoints/sendFriendRequest.js";
+import { DeleteFriend } from "./endpoints/deleteFriend.js";
+import { RespondToFriendRequest } from "./endpoints/respondToFriendRequest.js";
+import { useAuth } from "../auth/AuthContext";
 
-function VariantButtons({variant}){
+function VariantButtons({variant, userID}){
+  const { auth } = useAuth();
+
   switch (variant) {
   case "current":
-    return <Button>Remove</Button>
+    return <Button onClick={()=>{DeleteFriend(userID, auth.accessToken)}}>Remove</Button>
   case "receive":
-    return  <><Button>Accept</Button><Button>Ignore</Button></>
+    return  <><Button onClick={()=>{RespondToFriendRequest(userID, 'accept', auth.accessToken)}}>Accept</Button><Button onClick={()=>{RespondToFriendRequest(userID, 'reject', auth.accessToken)}}>Ignore</Button></>
   case "send":
-    return  <Button>Send</Button>
+    return  <Button onClick={()=>{SendFriendRequest(userID, auth.accessToken)}}>Send</Button>
+  default:
+    return 
   }
 }
 
 export default function FriendsList({friends, variant}) {
+
+
+
   var listItems;
   if (friends){
       listItems = friends.map(friend =>
       <li key={friend.id}>
-        {/* <img
-          src={"https://fastly.picsum.photos/id/547/200/300.jpg?hmac=O1sHSqamP2AYNG_ADzB7uKiGjh_fmg-Xq4v2KEapg_k"}
-          alt={friend.name}
-        /> */}
         {friend.username}
-        <VariantButtons variant={variant}/>
+        <VariantButtons variant={variant} userID={friend.id}/>
       </li>
       )
   }

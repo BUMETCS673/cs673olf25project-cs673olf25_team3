@@ -11,19 +11,19 @@ Notes:
 */
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-async function respondToFriendRequest(
+async function RespondToFriendRequest(
   userID:String,
   action:String,
   accessToken: String
 ) {
   try {
-    const response = await fetch(`${baseUrl}/api/friends/respond/${userID}`, {
+    const response = await fetch(`${baseUrl}/api/friends/respond/${userID}/`, {
       method: "POST", 
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
-        action: `${action}`,
       },
+      body: JSON.stringify({action:`${action}`})
     });
 
     const data = await response.json();
@@ -45,4 +45,4 @@ if (!response.ok) {
   }
 }
 
-export { respondToFriendRequest };
+export { RespondToFriendRequest };

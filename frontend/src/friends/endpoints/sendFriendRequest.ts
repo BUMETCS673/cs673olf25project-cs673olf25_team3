@@ -11,12 +11,12 @@ Notes:
 */
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-async function sendFriendRequest(
+async function SendFriendRequest(
   userID:String,
   accessToken: String
 ) {
   try {
-    const response = await fetch(`${baseUrl}/api/friends/request/${userID}`, {
+    const response = await fetch(`${baseUrl}/api/friends/request/${userID}/`, {
       method: "POST", 
       headers: {
         // "Content-Type": "application/json",
@@ -43,4 +43,4 @@ if (!response.ok) {
   }
 }
 
-export { sendFriendRequest };
+export { SendFriendRequest };
