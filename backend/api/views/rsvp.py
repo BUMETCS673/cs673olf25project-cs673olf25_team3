@@ -67,15 +67,18 @@ def create_rsvp(request):
 @permission_classes([IsAuthenticated])
 def get_rsvp_by_plan_id(request, plan_id):
     try:
-        rsvp = rsvp_collection.find_one({"plan_id": plan_id})
+        rsvps = list(rsvp_collection.find({"plan_id": ObjectId(plan_id)}))
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
-    if not rsvp:
+    if not rsvps:
         return Response({"error": "RSVP not found"},status=status.HTTP_404_NOT_FOUND)
     
-    rsvp["_id"] = str(rsvp["_id"])
-    return Response({"data": rsvp}, status=status.HTTP_200_OK)
+    # Convert ObjectIds to strings
+    for rsvp in rsvps:
+        rsvp["_id"] = str(rsvp["_id"])
+    
+    return Response({"data": rsvps}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -83,15 +86,18 @@ def get_rsvp_by_plan_id(request, plan_id):
 @permission_classes([IsAuthenticated])
 def get_rsvp_by_user_id(request, user_id):
     try:
-        rsvp = rsvp_collection.find_one({"user_id": user_id})
+        rsvps = list(rsvp_collection.find({"user_id": ObjectId(user_id)}))
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
-    if not rsvp:
+    if not rsvps:
         return Response({"error": "RSVP not found"},status=status.HTTP_404_NOT_FOUND)
     
-    rsvp["_id"] = str(rsvp["_id"])
-    return Response({"data": rsvp}, status=status.HTTP_200_OK)
+    # Convert ObjectIds to strings
+    for rsvp in rsvps:
+        rsvp["_id"] = str(rsvp["_id"])
+    
+    return Response({"data": rsvps}, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])
@@ -119,7 +125,7 @@ def delete_rsvp_by_plan_id(request, plan_id):
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
 
-    result = rsvp_collection.delete_one({"plan_id": plan_id})
+    result = rsvp_collection.delete_one({"plan_id": ObjectId(plan_id)})
 
     if result.deleted_count == 0:
         return Response({"error": "RSVP not found"},status=status.HTTP_404_NOT_FOUND)
