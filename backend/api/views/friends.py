@@ -114,10 +114,47 @@ def list_friends(request):
 @renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
 def remove_friend(request, friend_id):
-    fr = get_object_or_404(Friend, pk=friend_id)
-    if fr.sender != request.user and fr.receiver != request.user: # only participants in the friendship can delete it
+    """Delete a friendship or cancel a pending request
+
+    endpoint is tolerant - `friend_id` may be either the Friend record primary
+    key (pk) or the other user's id. In the latter case we remove any Friend
+    records that exist between the authenticated user and that other user
+    """
+    user = request.user
+
+    # 1) Try to interpret friend_id as a Friend.pk first
+    fr = Friend.objects.filter(pk=friend_id).first()
+    if fr:
+        if fr.sender != user and fr.receiver != user:
+            return Response({'detail': "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
+        fr.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # 2) If not a Friend.pk, try treating friend_id as the other user's id
+    try:
+        other = get_object_or_404(User, pk=friend_id)
+    except Exception:
+        # If we can't find a user by that id, return 404 to keep behaviour similar
+        return Response({'detail': "Not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Find any Friend records between the authenticated user and the other user
+    candidates = Friend.objects.filter(
+        (models.Q(sender=user) & models.Q(receiver=other)) |
+        (models.Q(sender=other) & models.Q(receiver=user))
+    )
+
+    if not candidates.exists():
+        return Response({'detail': "Not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    # Ensure the authenticated user is a participant (should always be true here)
+    # and delete all matching records to be defensive against duplicates
+    deleted_count = 0
+    for c in candidates:
+        if c.sender == user or c.receiver == user:
+            c.delete()
+            deleted_count += 1
+
+    if deleted_count == 0:
         return Response({'detail': "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
-    
-    # Deleting removes either a pending request or an accepted friendship
-    fr.delete()
+
     return Response(status=status.HTTP_204_NO_CONTENT)
