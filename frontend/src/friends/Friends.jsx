@@ -16,23 +16,23 @@ export default function Friends() {
   );
 
   
-  const [users, setUsers] = useState<Array>([]);
-  const [loading, setLoading] = useState(true);
+  // const [users, setUsers] = useState<Array>([]);
+  // const [loading, setLoading] = useState(true);
 
 
 
-    //Load users from API
-  const loadUsers = async () => {
-    if (!auth.accessToken) return;
-    setLoading(true);
-    const result = await getUsers(auth.accessToken);
-    if (!result.errorMessage) {
-      setUsers(result);
-    } else {
-      console.error(result.errorMessage);
-    }
-    setLoading(false);
-  };
+  //   //Load users from API
+  // const loadUsers = async () => {
+  //   if (!auth.accessToken) return;
+  //   setLoading(true);
+  //   const result = await getUsers(auth.accessToken);
+  //   if (!result.errorMessage) {
+  //     setUsers(result);
+  //   } else {
+  //     console.error(result.errorMessage);
+  //   }
+  //   setLoading(false);
+  // };
 
   
 
