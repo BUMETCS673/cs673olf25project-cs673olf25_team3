@@ -6,22 +6,22 @@ import { DeleteFriend } from "./endpoints/deleteFriend.js";
 import { RespondToFriendRequest } from "./endpoints/respondToFriendRequest.js";
 import { useAuth } from "../auth/AuthContext";
 
-function VariantButtons({variant, userID}){
+function VariantButtons({variant, userID, loadFriends}){
   const { auth } = useAuth();
 
   switch (variant) {
   case "current":
-    return <Button onClick={()=>{DeleteFriend(userID, auth.accessToken)}}>Remove</Button>
+    return <Button onClick={()=>{DeleteFriend(userID, auth.accessToken); loadFriends()}}>Remove</Button>
   case "receive":
-    return  <><Button onClick={()=>{RespondToFriendRequest(userID, 'accept', auth.accessToken)}}>Accept</Button><Button onClick={()=>{RespondToFriendRequest(userID, 'reject', auth.accessToken)}}>Ignore</Button></>
+    return  <><Button onClick={()=>{RespondToFriendRequest(userID, 'accept', auth.accessToken); loadFriends()}}>Accept</Button><Button onClick={()=>{RespondToFriendRequest(userID, 'reject', auth.accessToken); loadFriends()}}>Ignore</Button></>
   case "send":
-    return  <Button onClick={()=>{SendFriendRequest(userID, auth.accessToken)}}>Send</Button>
+    return  <Button onClick={()=>{SendFriendRequest(userID, auth.accessToken); loadFriends()}}>Send</Button>
   default:
     return 
   }
 }
 
-export default function FriendsList({friends, variant}) {
+export default function FriendsList({friends, variant, loadFriends}) {
 
 
 
@@ -30,7 +30,7 @@ export default function FriendsList({friends, variant}) {
       listItems = friends.map(friend =>
       <li key={friend.id}>
         {friend.username}
-        <VariantButtons variant={variant} userID={friend.id}/>
+        <VariantButtons variant={variant} userID={friend.id} loadFriends={loadFriends}/>
       </li>
       )
   }

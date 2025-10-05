@@ -19,18 +19,18 @@ export default function Friends() {
   // );
 
   const { auth } = useAuth();
-  const [otherUsers, setOtherUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [unconnectedUsers, setUnconnectedUsers] = useState([])
   const [friends, setFriends] = useState([]);
 
 
 
     //Load users from API
-  const loadOtherUsers = async () => {
+  const loadAllUsers = async () => {
     if (!auth.accessToken) return;
     const result = await getUsers(auth.accessToken);
     if (!result.errorMessage) {
-      setOtherUsers(result);
+      setAllUsers(result);
     } else {
       console.error(result.errorMessage);
     }
@@ -47,12 +47,12 @@ export default function Friends() {
   };
 
   useEffect(() => {
-    loadOtherUsers();
+    loadAllUsers();
     loadFriends();
   }, [auth.accessToken]);
 
   useEffect(() => {
-    let filteredUsers = otherUsers.slice();
+    let filteredUsers = allUsers.slice();
     
     let excludedIds = [friends.current_user_id]
     if (friends.friends){
@@ -69,7 +69,7 @@ export default function Friends() {
     }
     filteredUsers  = filteredUsers.filter((user) => {!(user.id in excludedIds)})
     setUnconnectedUsers(filteredUsers)
-  }, [otherUsers, friends])
+  }, [allUsers, friends])
 
   
 
@@ -79,22 +79,22 @@ export default function Friends() {
 
       <div>
         <h2>Current Friends:</h2>
-        <FriendsList friends={friends.friends} variant={"current"}></FriendsList>
+        <FriendsList friends={friends.friends} variant={"current"} loadFriends={loadFriends}></FriendsList>
       </div>
 
       <div>
         <h2>Add Friends:</h2>
-        <FriendsList friends={unconnectedUsers}  variant={"send"}></FriendsList>
+        <FriendsList friends={unconnectedUsers}  variant={"send"} loadFriends={loadFriends}></FriendsList>
       </div>
 
       <div>
         <h2>Received Friend Requests:</h2>
-        <FriendsList friends={friends.incoming_requests} variant={"receive"}></FriendsList>
+        <FriendsList friends={friends.incoming_requests} variant={"receive"} loadFriends={loadFriends}></FriendsList>
       </div>
 
       <div>
         <h2>Sent Friend Requests:</h2>
-        <FriendsList friends={friends.outgoing_requests} variant={null}></FriendsList>
+        <FriendsList friends={friends.outgoing_requests} variant={null} loadFriends={loadFriends}></FriendsList>
       </div>
     </div>
   );
