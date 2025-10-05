@@ -58,8 +58,9 @@ def test_list_friends(auth_client, create_user):
     resp = client.get('/api/friends/list/')
     assert resp.status_code == status.HTTP_200_OK
     assert len(resp.data['friends']) == 1
-    assert len(resp.data['pending_sent']) == 1
-    assert len(resp.data['pending_received']) == 1
+    # new keys per api.md
+    assert len(resp.data['outgoing_requests']) == 1
+    assert len(resp.data['incoming_requests']) == 1
 
 
 @pytest.mark.django_db
