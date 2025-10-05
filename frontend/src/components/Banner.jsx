@@ -22,13 +22,14 @@ import GroupIcon from '@mui/icons-material/Group';
 import HomeIcon from '@mui/icons-material/Home';
 import {IconButton} from '@mui/material';
 
-import AuthProtectedRoute from '../auth/AuthProtectedRoute';
-import { Navigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import {Button} from '@mui/material';
 import { Link } from 'react-router-dom';
 import {Tooltip } from '@mui/material';
 
 function Banner(){
+    const { auth } = useAuth();
+
     return (<Box 
           sx={{
         display: "flex",
@@ -44,7 +45,7 @@ function Banner(){
                 </Typography>
                 <Logo/>
             </div>
-            <AuthProtectedRoute>
+            {auth.accessToken && 
               <div>
                   <Tooltip title="Home">
                     <IconButton size="large"  color="inherit" component={Link} to="/home" >
@@ -62,7 +63,7 @@ function Banner(){
                     </Button>
                   </Tooltip>
               </div>
-            </AuthProtectedRoute>
+              }
         </Toolbar>
       </AppBar>
     </Box>
