@@ -2,6 +2,8 @@ import React from "react";
 import FriendsList from "./FriendsList.jsx";
 import User from '../util.js';
 import { useEffect, useState } from "react";
+import { useAuth } from "../auth/AuthContext";
+import { getUsers } from "./endpoints/getUsers.js";
 
 
 export default function Friends() {
@@ -15,24 +17,28 @@ export default function Friends() {
     !user.isFriends(myself)
   );
 
-  
-  // const [users, setUsers] = useState<Array>([]);
-  // const [loading, setLoading] = useState(true);
+  const { auth } = useAuth();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
 
 
-  //   //Load users from API
-  // const loadUsers = async () => {
-  //   if (!auth.accessToken) return;
-  //   setLoading(true);
-  //   const result = await getUsers(auth.accessToken);
-  //   if (!result.errorMessage) {
-  //     setUsers(result);
-  //   } else {
-  //     console.error(result.errorMessage);
-  //   }
-  //   setLoading(false);
-  // };
+    //Load users from API
+  const loadUsers = async () => {
+    if (!auth.accessToken) return;
+    setLoading(true);
+    const result = await getUsers(auth.accessToken);
+    if (!result.errorMessage) {
+      setUsers(result);
+    } else {
+      console.error(result.errorMessage);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadUsers();
+  }, [auth.accessToken]);
 
   
 
@@ -42,17 +48,17 @@ export default function Friends() {
 
       <div>
         <h2>Current Friends:</h2>
-        <FriendsList friends={friends}></FriendsList>
+        <FriendsList friends={users}></FriendsList>
       </div>
 
       <div>
         <h2>Add Friends:</h2>
-        <FriendsList notFriends={notFriends}></FriendsList>
+        <FriendsList notFriends={users}></FriendsList>
       </div>
 
       <div>
         <h2>Friend Requests:</h2>
-        <FriendsList notFriends={notFriends}></FriendsList>
+        <FriendsList notFriends={users}></FriendsList>
       </div>
     </div>
   );

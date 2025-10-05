@@ -39,9 +39,7 @@ function App() {
             }
           />     
           <Route path="/friends" element={
-            <AuthProtectedRoute>
               <Friends />
-            </AuthProtectedRoute>
             } 
           />   
           <Route path="/login" element={<Login />} />
