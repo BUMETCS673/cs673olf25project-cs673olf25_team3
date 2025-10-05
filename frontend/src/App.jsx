@@ -65,7 +65,9 @@ function App() {
             />
 
             <Route path="/friends" element={
+                <AuthProtectedRoute>
                 <Friends />
+                </AuthProtectedRoute>
               } 
             />   
 
