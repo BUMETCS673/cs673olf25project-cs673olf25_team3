@@ -415,6 +415,17 @@ These endpoints allow creating and responding to friend requests. The frontend u
 
 **Description:** Returns friend relationships and pending requests for the authenticated user.
 
+The friends list now returns both the other user’s id (so you can map/display the user) and a separate Friend record id (so you can act on the request). Use the former for UI and the latter for API actions
+
+list_friends returns:
+    - id — the other user’s id (string) — this matches the id you get from the users endpoints and should be used to look up/display user info in the UI
+    - request_id — the Friend record primary key (Friend.pk) — this is the unique id for that friend-request record and must be used when you call friend-level endpoints (respond / remove)
+Tests reflect this contract and assert:
+    - outgoing_requests[i]['id'] == str(fr_out.receiver.pk)
+    - outgoing_requests[i]['request_id'] == str(fr_out.pk)
+    - incoming_requests[i]['id'] == str(fr_in.sender.pk)
+    - incoming_requests[i]['request_id'] == str(fr_in.pk) Those tests pass locally, so the API is returning the values the frontend needs
+
 **Response Example:**
 ```json
 {

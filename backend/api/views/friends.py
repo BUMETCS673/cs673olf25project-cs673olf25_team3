@@ -137,17 +137,16 @@ def list_friends(request):
 @api_view(['DELETE'])
 @renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
-def remove_friend(request, friend_id):
+def remove_friend(request, request_id):
     """Delete a friendship or cancel a pending request
 
-    endpoint is tolerant - `friend_id` may be either the Friend record primary
+    endpoint is tolerant - `request_id` may be either the Friend record primary
     key (pk) or the other user's id. In the latter case we remove any Friend
     records that exist between the authenticated user and that other user
     """
     user = request.user
-
-    # 1) Try to interpret friend_id as a Friend.pk first
-    fr = Friend.objects.filter(pk=friend_id).first()
+    # 1) Try to interpret request_id as a Friend.pk first
+    fr = Friend.objects.filter(pk=request_id).first()
     if fr:
         if fr.sender != user and fr.receiver != user:
             return Response({'detail': "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
@@ -156,7 +155,7 @@ def remove_friend(request, friend_id):
 
     # 2) If not a Friend.pk, try treating friend_id as the other user's id
     try:
-        other = get_object_or_404(User, pk=friend_id)
+        other = get_object_or_404(User, pk=request_id)
     except Exception:
         # If we can't find a user by that id, return 404 to keep behaviour similar
         return Response({'detail': "Not found"}, status=status.HTTP_404_NOT_FOUND)
