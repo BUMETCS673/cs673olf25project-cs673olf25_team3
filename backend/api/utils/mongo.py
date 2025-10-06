@@ -65,3 +65,17 @@ def get_collection(collection_name):
         collection = collection._collection
 
     return collection
+
+
+def query_collection( collection, query ):
+    """
+    Query a mongodb collection with the find method.
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the mongodb query
+
+    Returns:
+        (list) - a list of the query
+    """
+    return collection.find(query)

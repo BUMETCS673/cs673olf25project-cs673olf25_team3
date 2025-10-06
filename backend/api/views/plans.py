@@ -4,8 +4,10 @@
 #   - add user id in serializer - https://chatgpt.com/share/68d97938-262c-8000-a3e5-4dd21b8d81f8
 #   - allowed_fields - https://chatgpt.com/share/68d98383-b998-8008-a1a2-5d14c6b68f2a
 
+from datetime import datetime
 from api.serializers.plans_serializer import PlansSerializer
 from api.utils.mongo import get_collection
+from api.services.plans import get_all_plans, get_filtered_plans
 from bson import ObjectId
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes, permission_classes, parser_classes
@@ -32,6 +34,9 @@ def create_plan(request):
     # add the user id to the payload
     data['created_by'] = str(request.user.id)
 
+    # add current timestamp
+    data['created_at'] = datetime.now().isoformat()
+
     # serialize the payload
     serializer = PlansSerializer(data=data)
     
@@ -40,7 +45,7 @@ def create_plan(request):
         try:
             data = dict(serializer.validated_data)
 
-            allowed_fields = ["title", "description", "location", "start_time", "end_time","created_by"]
+            allowed_fields = ["title", "description", "location", "start_time", "end_time","created_by", "created_at"]
             plan_data = {key: data[key] for key in allowed_fields if key in data}
 
             # save the data
@@ -66,8 +71,18 @@ def create_plan(request):
 @renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
 def get_plans(request):
-    plans = list(plans_collection.find({}))
+    
+    # get id of current user
+    user_id = request.user.id
 
+    # set query filters 
+    allowed_fields = ["start_time", "end_time", "friends"]
+    filters = {key: request.GET[key] for key in allowed_fields if key in request.GET}
+    
+    # print(filters)
+    plans = get_filtered_plans(filters, user_id)
+    # plans = get_all_plans()
+    print(plans)
     # change plans ids to string
     for plan in plans:
         plan["_id"] = str(plan["_id"])
@@ -85,7 +100,7 @@ def get_plans_by_id(request, plan_id):
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
     if not plan:
-        return Response({"error": "Plan not found"},status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "Plan not found"},status=status.HTTP_404_NOT_FOUND )
     
     # Santize the id
     plan["_id"] = str(plan["_id"])

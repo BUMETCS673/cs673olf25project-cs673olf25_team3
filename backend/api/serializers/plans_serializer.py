@@ -19,5 +19,6 @@ class PlansSerializer(serializers.Serializer):
     start_time = serializers.DateTimeField()
     end_time = serializers.DateTimeField()
     created_by = serializers.CharField()
+    created_at = serializers.CharField()
     
 
