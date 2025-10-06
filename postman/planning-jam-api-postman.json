@@ -218,7 +218,37 @@
 		},
 		{
 			"name": "Friends",
-			"item": []
+			"item": [
+				{
+					"name": "List Friends / Requests",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{base_url}}/api/friends/list/", "host": [ "{{base_url}}" ], "path": [ "api", "friends", "list", "" ] }
+					},
+					"response": [
+						{
+							"name": "Example response",
+							"originalRequest": {},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"body": "{\n  \"current_user_id\": \"68e2bc8d390fe44b0f398f4e\",\n  \"friends\": [{\"id\": \"68d5d66921c840dea3433ff2\", \"username\": \"bob\"}],\n  \"incoming_requests\": [{\n    \"id\": \"68d5d66921c840dea3433ff3\",\n    \"request_id\": \"68e2bc96390fe44b0f398faa\",\n    \"username\": \"carol\",\n    \"status\": \"pending\"\n  }],\n  \"outgoing_requests\": [{\n    \"id\": \"68d5d66921c840dea3433ff4\",\n    \"request_id\": \"68e2bc96390fe44b0f398f4f\",\n    \"username\": \"dave\",\n    \"status\": \"pending\"\n  }]\n}"
+						}
+					]
+				},
+				{
+					"name": "Remove Friend / Cancel Request",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "DELETE",
+						"header": [],
+						"url": { "raw": "{{base_url}}/api/friends/remove/{{request_id}}/", "host": [ "{{base_url}}" ], "path": [ "api", "friends", "remove", "{{request_id}}" ] }
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Plans",

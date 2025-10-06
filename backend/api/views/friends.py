@@ -38,11 +38,23 @@ def send_friend_request(request, user_id):
 
     to_user = get_object_or_404(User, pk=user_id)
 
-    # check for duplicates or already accepted friendships
-    if Friend.objects.filter(sender=request.user, receiver=to_user).exists() or \
+    # check for existing accepted friendship (either direction)
+    if Friend.objects.filter(sender=request.user, receiver=to_user, status='accepted').exists() or \
        Friend.objects.filter(sender=to_user, receiver=request.user, status='accepted').exists():
         return Response({'detail': "Friend request already exists or already friends"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+    # If there's already a pending request from the current user -> duplicate
+    if Friend.objects.filter(sender=request.user, receiver=to_user, status='pending').exists():
+        return Response({'detail': "Friend request already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # If the target user already sent a pending request to the current user,
+    # accept that request and return the accepted record (auto-match)
+    reciprocal = Friend.objects.filter(sender=to_user, receiver=request.user, status='pending').first()
+    if reciprocal:
+        reciprocal.status = 'accepted'
+        reciprocal.save()
+        return Response({'id': str(reciprocal.pk), 'sender': str(reciprocal.sender.pk), 'receiver': str(reciprocal.receiver.pk), 'status': reciprocal.status}, status=status.HTTP_200_OK)
+
     # Create the pending friend request
     fr = Friend.objects.create(sender=request.user, receiver=to_user, status='pending')
     return Response({'id': str(fr.pk), 'sender': str(fr.sender.pk), 'receiver': str(fr.receiver.pk), 'status': fr.status},
@@ -91,11 +103,23 @@ def list_friends(request):
     pending_received_qs = Friend.objects.filter(receiver=user, status='pending')
 
     # Normalize pending lists to minimal public shape (id and username)
+    # Provide both the user's id (so frontend can map to user lists) and the
+    # Friend record id (request_id) so the frontend can cancel by Friend.pk.
     outgoing_requests = [
-        {'id': str(p.pk), 'username': getattr(p.receiver, 'username', '')} for p in pending_sent_qs
+        {
+            'id': str(p.receiver.pk),
+            'username': getattr(p.receiver, 'username', ''),
+            'request_id': str(p.pk),
+        }
+        for p in pending_sent_qs
     ]
     incoming_requests = [
-        {'id': str(p.pk), 'username': getattr(p.sender, 'username', '')} for p in pending_received_qs
+        {
+            'id': str(p.sender.pk),
+            'username': getattr(p.sender, 'username', ''),
+            'request_id': str(p.pk),
+        }
+        for p in pending_received_qs
     ]
 
     # Return the shape defined in api.md while keeping old keys for compatibility
@@ -113,17 +137,16 @@ def list_friends(request):
 @api_view(['DELETE'])
 @renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
-def remove_friend(request, friend_id):
+def remove_friend(request, request_id):
     """Delete a friendship or cancel a pending request
 
-    endpoint is tolerant - `friend_id` may be either the Friend record primary
+    endpoint is tolerant - `request_id` may be either the Friend record primary
     key (pk) or the other user's id. In the latter case we remove any Friend
     records that exist between the authenticated user and that other user
     """
     user = request.user
-
-    # 1) Try to interpret friend_id as a Friend.pk first
-    fr = Friend.objects.filter(pk=friend_id).first()
+    # 1) Try to interpret request_id as a Friend.pk first
+    fr = Friend.objects.filter(pk=request_id).first()
     if fr:
         if fr.sender != user and fr.receiver != user:
             return Response({'detail': "Not authorized"}, status=status.HTTP_403_FORBIDDEN)
@@ -132,7 +155,7 @@ def remove_friend(request, friend_id):
 
     # 2) If not a Friend.pk, try treating friend_id as the other user's id
     try:
-        other = get_object_or_404(User, pk=friend_id)
+        other = get_object_or_404(User, pk=request_id)
     except Exception:
         # If we can't find a user by that id, return 404 to keep behaviour similar
         return Response({'detail': "Not found"}, status=status.HTTP_404_NOT_FOUND)

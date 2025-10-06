@@ -32,6 +32,25 @@ def test_send_friend_request(auth_client, create_user):
 
 
 @pytest.mark.django_db
+def test_reciprocal_request_auto_accept(auth_client, create_user):
+    """If user2 already sent a pending request to user1, when user1 sends a request back
+    the system should accept the existing pending request instead of creating a duplicate."""
+    client, user1 = auth_client
+    user2 = create_user('recip', 'recip@test.com', 'pass123')
+
+    # user2 -> user1 pending
+    fr = Friend.objects.create(sender=user2, receiver=user1, status='pending')
+
+    # user1 sends a request to user2; this should accept the reciprocal
+    resp = client.post(f'/api/friends/request/{user2.id}/')
+    assert resp.status_code == status.HTTP_200_OK
+    fr.refresh_from_db()
+    assert fr.status == 'accepted'
+    # still only one Friend record
+    assert Friend.objects.count() == 1
+
+
+@pytest.mark.django_db
 def test_respond_to_friend_request(auth_client, create_user):
     client, user1 = auth_client
     user2 = create_user('testuser2b', 'test2b@test.com', 'testpass123')
@@ -51,16 +70,27 @@ def test_respond_to_friend_request(auth_client, create_user):
 def test_list_friends(auth_client, create_user):
     client, user1 = auth_client
     user2 = create_user('user3', 'test3@test.com', 'pass123')
-    Friend.objects.create(sender=user1, receiver=user2, status='pending')
-    Friend.objects.create(sender=create_user('user4', 'test4@test.com', 'pass123'), receiver=user1, status='pending')
+    fr_out = Friend.objects.create(sender=user1, receiver=user2, status='pending')
+    fr_in = Friend.objects.create(sender=create_user('user4', 'test4@test.com', 'pass123'), receiver=user1, status='pending')
     Friend.objects.create(sender=user1, receiver=create_user('user5', 'test5@test.com', 'pass123'), status='accepted')
 
     resp = client.get('/api/friends/list/')
     assert resp.status_code == status.HTTP_200_OK
     assert len(resp.data['friends']) == 1
-    # new keys per api.md
+    # outgoing/incoming request shapes include both the user id and the Friend record id
     assert len(resp.data['outgoing_requests']) == 1
     assert len(resp.data['incoming_requests']) == 1
+
+    out = resp.data['outgoing_requests'][0]
+    inc = resp.data['incoming_requests'][0]
+
+    # outgoing 'id' should equal the receiver user id and 'request_id' should equal Friend.pk
+    assert out['id'] == str(fr_out.receiver.pk)
+    assert out['request_id'] == str(fr_out.pk)
+
+    # incoming 'id' should equal the sender user id and 'request_id' should equal Friend.pk
+    assert inc['id'] == str(fr_in.sender.pk)
+    assert inc['request_id'] == str(fr_in.pk)
 
 
 @pytest.mark.django_db
