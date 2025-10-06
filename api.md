@@ -449,10 +449,11 @@ curl -i -X DELETE "http://localhost:8000/api/friends/remove/<REQUEST_ID>/" \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
-### 4. Remove friend
-**Endpoint:** `DELETE /friends/remove/:friend_id/`
+### 4. Remove friend / Cancel request
 
-**Description:** Remove an existing friend relationship.
+**Endpoint:** `DELETE /friends/remove/:request_id/`
+
+**Description:** Remove an existing friend relationship or cancel an outgoing request. Use the Friend record id (`request_id`, the Friend.pk value) when calling this endpoint — this matches the `request_id` returned in the incoming/outgoing entries from the friends list. This endpoint is used both to remove accepted friends and to cancel the pending outgoing requests
 
 **Response Example:**
 - HTTP 204 No Content (empty response body)
