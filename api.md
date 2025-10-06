@@ -10,7 +10,7 @@
     - [Get plan by id](#3-get-plan-by-id)
     - [Edit plan](#4-edit-a-plan)
     - [Delete plan](#5-delete-a-plan)
-
+ - [Users](#users)
 
 ## Base Url
 
@@ -294,3 +294,177 @@ Authorization: Bearer <access-token>
     "message": "Event 68da01e2fa068cbd5713d439 deleted successfully"
 }
 ```
+
+
+
+
+## Users
+
+The Users endpoints are used by the frontend to search for users and display public profile information.
+
+### Fields (public)
+| Field | Type | Description |
+|-------|------|-------------|
+| `id`  | string | User id (string, matches Django user PK) |
+| `username` | string | Public username |
+| `first_name` | string | Optional first name |
+| `last_name` | string | Optional last name |
+
+### 1. List users
+**Endpoint:** `GET /users/`
+
+**Description:** Returns a list of users. Authentication required (JWT).
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Response Example:**
+```json
+[
+  {"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"},
+  {"id": "2", "username": "bob", "first_name": "Bob", "last_name": "Y"}
+]
+```
+
+### 2. Get user by id
+**Endpoint:** `GET /users/:user_id/`
+
+**Description:** Returns public fields for a single user. Authentication required.
+
+**Response Example:**
+```json
+{"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"}
+```
+
+{ "detail": "Not found." }
+```
+
+### Quick curl examples (copy/paste)
+- Obtain token (use seeded user or create one via /api/register/):
+```bash
+curl -s -X POST http://localhost:8000/api/token/ \
+  -H "Content-Type: application/json" \
+  -d '{"username":"rachel.green","password":"password123"}' | jq
+```
+- List users:
+```bash
+curl -s http://localhost:8000/api/users/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+- Get user by id:
+```bash
+curl -s http://localhost:8000/api/users/<user_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+
+4) Send a friend request to another user (replace <recipient_id>)
+```bash
+curl -s -X POST http://localhost:8000/api/friends/request/<recipient_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+
+5) Respond to a friend request (accept)
+```bash
+curl -s -X POST http://localhost:8000/api/friends/respond/<request_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"accept"}' | jq
+```
+
+
+## Friend Requests
+
+These endpoints allow creating and responding to friend requests. The frontend uses these to send requests and accept/reject them.
+
+### 1. Send friend request
+**Endpoint:** `POST /friends/request/:user_id/`
+
+**Description:** Send a friend request to the user with id `user_id`. Authentication required.
+**Response Example:**
+```json
+{
+  "id": "68e2bc8d390fe44b0f398f4e",
+  "sender": "68cd793ca4a36f574952921b",
+  "receiver": "68d2bb9c8b1d2c3e4f5a6b7",
+  "status": "pending"
+}
+```
+
+### 2. Respond to friend request
+**Endpoint:** `POST /friends/respond/:request_id/`
+
+**Description:** Accept or reject a friend request. Request body should include `action` set to `accept` or `reject`.
+
+**Request Body Example:**
+```json
+{"action": "accept"}
+```
+
+**Response Example:**
+```json
+{
+  "id": "68e2bc8d390fe44b0f398f4e",
+  "status": "accepted"
+}
+```
+
+### 3. List friends / requests
+**Endpoint:** `GET /friends/` or `GET /friends/list/`
+
+**Description:** Returns friend relationships and pending requests for the authenticated user.
+
+The friends list now returns both the other user’s id (so you can map/display the user) and a separate Friend record id (so you can act on the request). Use the former for UI and the latter for API actions
+
+list_friends returns:
+    - id — the other user’s id (string) — this matches the id you get from the users endpoints and should be used to look up/display user info in the UI
+    - request_id — the Friend record primary key (Friend.pk) — this is the unique id for that friend-request record and must be used when you call friend-level endpoints (respond / remove)
+Tests reflect this contract and assert:
+    - outgoing_requests[i]['id'] == str(fr_out.receiver.pk)
+    - outgoing_requests[i]['request_id'] == str(fr_out.pk)
+    - incoming_requests[i]['id'] == str(fr_in.sender.pk)
+    - incoming_requests[i]['request_id'] == str(fr_in.pk) Those tests pass locally, so the API is returning the values the frontend needs
+
+**Response Example:**
+```json
+{
+  "current_user_id": "68e2bc8d390fe44b0f398f4e",
+  "friends": [ {"id": "68d5d66921c840dea3433ff2", "username": "bob"} ],
+  "incoming_requests": [
+    {
+      "id": "68d5d66921c840dea3433ff3",      // other user's id (User.id) 
+      "request_id": "68e2bc96390fe44b0f398faa", // Friend record id 
+      "username": "carol",
+      "status": "pending"
+    }
+  ],
+  "outgoing_requests": [
+    {
+      "id": "68d5d66921c840dea3433ff4",
+      "request_id": "68e2bc96390fe44b0f398f4f",
+      "username": "dave",
+      "status": "pending"
+    }
+  ]
+}
+```
+
+Notes:
+- `id` in the incoming/outgoing entries is the other user's id (User.id). Use this to map to user records in the UI
+- `request_id` is the Friend record primary key (Friend.pk). Use this id when calling friend-level endpoints.
+
+Example: Cancel an outgoing request using `request_id`:
+```bash
+curl -i -X DELETE "http://localhost:8000/api/friends/remove/<REQUEST_ID>/" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 4. Remove friend / Cancel request
+
+**Endpoint:** `DELETE /friends/remove/:request_id/`
+
+**Description:** Remove an existing friend relationship or cancel an outgoing request. Use the Friend record id (`request_id`, the Friend.pk value) when calling this endpoint — this matches the `request_id` returned in the incoming/outgoing entries from the friends list. This endpoint is used both to remove accepted friends and to cancel the pending outgoing requests
+
+**Response Example:**
+- HTTP 204 No Content (empty response body)

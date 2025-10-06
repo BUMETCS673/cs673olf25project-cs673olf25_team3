@@ -1,3 +1,7 @@
+/*
+AI-generated: 0%
+Human-written: 100% (re-used similar structure to other tests)
+*/
 import { describe, it, expect, vi, Mock } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import '@testing-library/jest-dom';

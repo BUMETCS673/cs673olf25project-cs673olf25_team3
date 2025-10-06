@@ -16,7 +16,11 @@ from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 import logging
 logger = logging.getLogger(__name__)
 
-plans_collection = get_collection('plans')
+
+def get_plans_collection():
+    return get_collection('plans')
+
+plans_collection = get_plans_collection();
 
 @api_view(['POST'])
 @renderer_classes([JSONRenderer])
