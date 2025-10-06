@@ -4,13 +4,20 @@
 
 - [Base URL](#base-url)
 - [Authentication](#authentication)
+- [Users](#users)
+    - [List Users](#1-list-users)
+    - [Get User by Id](#2-get-user-by-id)
 - [Plans](#plans)
     - [Get plans](#1-get-plans)
     - [Create plan](#2-create-a-plan)
     - [Get plan by id](#3-get-plan-by-id)
     - [Edit plan](#4-edit-a-plan)
     - [Delete plan](#5-delete-a-plan)
- - [Users](#users)
+- [Friend Requests](#friend-requests)
+    - [Create Friend Reques](#1-send-friend-request)
+    - [Respond to Friend Request](#2-respond-to-friend-request)
+    - [List Friends](#3-list-friends--requests)
+    - [Remove Friend](#4-remove-friend--cancel-request)
 
 ## Base Url
 
@@ -74,6 +81,83 @@ Authorization: Bearer <access-token>
 }
 ```
 
+
+## Users
+
+The Users endpoints are used by the frontend to search for users and display public profile information.
+
+### Fields (public)
+| Field | Type | Description |
+|-------|------|-------------|
+| `id`  | string | User id (string, matches Django user PK) |
+| `username` | string | Public username |
+| `first_name` | string | Optional first name |
+| `last_name` | string | Optional last name |
+
+### 1. List users
+**Endpoint:** `GET /users/`
+
+**Description:** Returns a list of users. Authentication required (JWT).
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Response Example:**
+```json
+[
+  {"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"},
+  {"id": "2", "username": "bob", "first_name": "Bob", "last_name": "Y"}
+]
+```
+
+### 2. Get user by id
+**Endpoint:** `GET /users/:user_id/`
+
+**Description:** Returns public fields for a single user. Authentication required.
+
+**Response Example:**
+```json
+{"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"}
+```
+
+{ "detail": "Not found." }
+```
+
+### Quick curl examples (copy/paste)
+- Obtain token (use seeded user or create one via /api/register/):
+```bash
+curl -s -X POST http://localhost:8000/api/token/ \
+  -H "Content-Type: application/json" \
+  -d '{"username":"rachel.green","password":"password123"}' | jq
+```
+- List users:
+```bash
+curl -s http://localhost:8000/api/users/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+- Get user by id:
+```bash
+curl -s http://localhost:8000/api/users/<user_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+
+4) Send a friend request to another user (replace <recipient_id>)
+```bash
+curl -s -X POST http://localhost:8000/api/friends/request/<recipient_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+
+5) Respond to a friend request (accept)
+```bash
+curl -s -X POST http://localhost:8000/api/friends/respond/<request_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"accept"}' | jq
+```
+
+
 ## Plans
 
 ### Fields
@@ -101,45 +185,58 @@ Authorization: Bearer <access-token>
 ### 1. Get Plans
 **Endpoint:** `GET /plans`
 
-**Description:** Returns a list of plans.  
+**Description:** Returns a list of plans created by the logged in users and their friends.   
 
 **Header:**
 ```
 Authorization: Bearer <access-token>
 ```
 
+**Query Parameters:**
+| Parameter   | Type   | Required | Default | Description  |
+|-------------|--------|----------|---------|------------------|
+| `friends`   | string | No       | 1        | Query with friend's plans. Set to 1 or true for true, and 0 or false for false. |
+| `start_time` | string | No      | current timestamp | The start date in UTC of the plan to query from  |
+| `end_time`   | string | No      | -       | The end date in UTC of the plan to query up to |
+
+
+**Example Request:**
+```
+GET /api/plans/?start_time=2025-09-27T15:00:00Z&end_time=2025-10-30T15:00:00Z&friends=true
+```
+
 **Response Example:**
 ```json
 [
-  {
-    "_id": "68dabba350510db53d9af43d",
-    "title": "Game Night", 
-    "description": "Lots of fun and laughters with friends.", 
-    "location": {
-        "address1": "1 main st", 
-        "city": "Boston", 
-        "state": "MA", 
-        "zipcode": "12345"
+    {
+        "_id": "68d9858ce23a1994b10f1a8f",
+        "title": "Game Night Three",
+        "description": "Lots of fun and laughters with friends.",
+        "location": {
+            "address1": "1 main st",
+            "city": "Boston",
+            "state": "MA",
+            "zipcode": 12345
+        },
+        "start_time": "2025-09-28T12:00:00",
+        "end_time": "2025-09-28T15:00:00",
+        "created_by": "68cd793ca4a36f574952921b"
     },
-    "start_time": "2025-09-28T12:00:00Z",
-    "end_time": "2025-09-28T15:00:00Z",
-    "created_by": "68cd793ca4a36f574952921b"
-  },
-  {
-    "_id": "68d7528319852c1d249d3bbb",
-    "title": "Its Adam's Birthday!!!", 
-    "description": "Adam's 25th Birthday Party", 
-    "location": {
-        "name": "The Bar",
-        "address1": "1 main st", 
-        "city": "Boston", 
-        "state": "MA", 
-        "zipcode": "12345"
-    },
-    "start_time": "2025-09-28T12:00:00Z",
-    "end_time": "2025-09-28T15:00:00Z",
-    "created_by": "68cd793ca4a36f574952921b"
-  },
+    {
+        "_id": "68e40ba613b957b16c9a84c4",
+        "title": "Game Night",
+        "description": "Lots of fun and laughters with friends.",
+        "location": {
+            "address1": "1 main st",
+            "city": "Boston",
+            "state": "MA",
+            "zipcode": 12345
+        },
+        "start_time": "2025-10-24T12:00:00",
+        "end_time": "2025-10-24T15:00:00",
+        "created_by": "68cc5ec541e45271fe9d4896",
+        "created_at": "2025-10-06T18:34:14.069781"
+    }
   ...
 ]
 ```
@@ -148,7 +245,7 @@ Authorization: Bearer <access-token>
 
 **Endpoint:** `GET /plans/add`
 
-**Description:** Returns a list of plans.  
+**Description:** Creates a plan.  
 
 **Header:**
 ```
@@ -206,7 +303,6 @@ Content-Type: application/json
 ```
 Authorization: Bearer <access-token>
 ```
-
 
 **Response Example:**
 ```json
@@ -291,88 +387,9 @@ Authorization: Bearer <access-token>
 **Response Example**:
 ```
 {
-    "message": "Event 68da01e2fa068cbd5713d439 deleted successfully"
+    "message": "Plan 68da01e2fa068cbd5713d439 deleted successfully"
 }
 ```
-
-
-
-
-## Users
-
-The Users endpoints are used by the frontend to search for users and display public profile information.
-
-### Fields (public)
-| Field | Type | Description |
-|-------|------|-------------|
-| `id`  | string | User id (string, matches Django user PK) |
-| `username` | string | Public username |
-| `first_name` | string | Optional first name |
-| `last_name` | string | Optional last name |
-
-### 1. List users
-**Endpoint:** `GET /users/`
-
-**Description:** Returns a list of users. Authentication required (JWT).
-
-**Header:**
-```
-Authorization: Bearer <access-token>
-```
-
-**Response Example:**
-```json
-[
-  {"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"},
-  {"id": "2", "username": "bob", "first_name": "Bob", "last_name": "Y"}
-]
-```
-
-### 2. Get user by id
-**Endpoint:** `GET /users/:user_id/`
-
-**Description:** Returns public fields for a single user. Authentication required.
-
-**Response Example:**
-```json
-{"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"}
-```
-
-{ "detail": "Not found." }
-```
-
-### Quick curl examples (copy/paste)
-- Obtain token (use seeded user or create one via /api/register/):
-```bash
-curl -s -X POST http://localhost:8000/api/token/ \
-  -H "Content-Type: application/json" \
-  -d '{"username":"rachel.green","password":"password123"}' | jq
-```
-- List users:
-```bash
-curl -s http://localhost:8000/api/users/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
-```
-- Get user by id:
-```bash
-curl -s http://localhost:8000/api/users/<user_id>/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
-```
-
-4) Send a friend request to another user (replace <recipient_id>)
-```bash
-curl -s -X POST http://localhost:8000/api/friends/request/<recipient_id>/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
-```
-
-5) Respond to a friend request (accept)
-```bash
-curl -s -X POST http://localhost:8000/api/friends/respond/<request_id>/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"action":"accept"}' | jq
-```
-
 
 ## Friend Requests
 
