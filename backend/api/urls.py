@@ -20,7 +20,7 @@ Notes:
 # AI-generated: 20%
 
 from django.urls import path
-from .views import plans, users
+from .views import plans, users, rsvp
 from .views.friends import send_friend_request, respond_to_friend_request, list_friends, remove_friend
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -56,4 +56,10 @@ urlpatterns = [
     path('plans/<str:plan_id>/edit', plans.update_plan, name='update-plan'),
     path('plans/<str:plan_id>/delete', plans.delete_plan, name='delete-plan'),
 
+    # RSVP endpoints
+    path('rsvp/add', rsvp.create_rsvp, name='create-rsvp'),
+    path('rsvp/plan/<str:plan_id>', rsvp.get_rsvp_by_plan_id, name='get-rsvp-by-plan-id'),
+    path('rsvp/user/<str:user_id>', rsvp.get_rsvp_by_user_id, name='get-rsvp-by-user-id'),
+    path('rsvp/<str:rsvp_id>/delete', rsvp.delete_rsvp_by_id, name='delete-rsvp-by-id'),
+    path('rsvp/plan/<str:plan_id>/delete', rsvp.delete_rsvp_by_plan_id, name='delete-rsvp-by-plan-id'),
 ]

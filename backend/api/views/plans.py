@@ -85,7 +85,7 @@ def get_plans_by_id(request, plan_id):
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
     if not plan:
-        return Response({"error": "Plan not found"},status=status.HTTP_404_NOT_FOUND )
+        return Response({"error": "Plan not found"},status=status.HTTP_404_NOT_FOUND)
     
     # Santize the id
     plan["_id"] = str(plan["_id"])
