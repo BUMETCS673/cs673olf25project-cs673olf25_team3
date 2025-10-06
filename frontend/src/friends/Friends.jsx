@@ -16,10 +16,17 @@ export default function Friends() {
   const { auth } = useAuth();
   const [allUsers, setAllUsers] = useState([]);
   const [unconnectedUsers, setUnconnectedUsers] = useState([])
-  const [flip, setFlip]= useState(false)
+  const [triggerchanges, setTriggerChanges]= useState(false)
   const [friends, setFriends] = useState([]);
 
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTriggerChanges(true)
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [])
 
     //Load users from API
   const loadAllUsers = async () => {
@@ -45,8 +52,8 @@ export default function Friends() {
   useEffect(() => {
     loadAllUsers();
     loadFriends();
-    setFlip(false)
-  }, [auth.accessToken, flip]);
+    setTriggerChanges(false)
+  }, [auth.accessToken, triggerchanges]);
 
   useEffect(() => {
     if (allUsers.length > 0){
@@ -75,11 +82,11 @@ export default function Friends() {
 
       switch (variant) {
       case "current":
-        return <Button onClick={()=>{DeleteFriend(userID, auth.accessToken); setFlip(true)}}>Remove</Button>
+        return <Button onClick={()=>{DeleteFriend(userID, auth.accessToken); setTriggerChanges(true)}}>Remove</Button>
       case "receive":
-        return  <><Button onClick={()=>{RespondToFriendRequest(userID, 'accept', auth.accessToken); setFlip(true)}}>Accept</Button><Button onClick={()=>{RespondToFriendRequest(userID, 'reject', auth.accessToken); loadFriends()}}>Ignore</Button></>
+        return  <><Button onClick={()=>{RespondToFriendRequest(userID, 'accept', auth.accessToken); setTriggerChanges(true)}}>Accept</Button><Button onClick={()=>{RespondToFriendRequest(userID, 'reject', auth.accessToken); loadFriends()}}>Ignore</Button></>
       case "send":
-        return  <Button onClick={()=>{SendFriendRequest(userID, auth.accessToken); setFlip(true)}}>Send</Button>
+        return  <Button onClick={()=>{SendFriendRequest(userID, auth.accessToken); setTriggerChanges(true)}}>Send</Button>
       default:
         return 
       }
