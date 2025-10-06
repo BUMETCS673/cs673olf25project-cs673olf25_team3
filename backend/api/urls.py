@@ -47,7 +47,7 @@ urlpatterns = [
     path('friends/request/<str:user_id>/', send_friend_request, name='send_friend_request'),
     path('friends/respond/<str:request_id>/', respond_to_friend_request, name='respond_to_friend_request'),
     path('friends/', list_friends, name='list_friends'),
-    path('friends/remove/<str:friend_id>/', remove_friend, name='remove_friend'),
+  path('friends/remove/<str:request_id>/', remove_friend, name='remove_friend'),
 
     # Plans endpoints
     path('plans/', plans.get_plans, name='get-plans'),

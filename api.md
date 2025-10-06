@@ -382,10 +382,14 @@ These endpoints allow creating and responding to friend requests. The frontend u
 **Endpoint:** `POST /friends/request/:user_id/`
 
 **Description:** Send a friend request to the user with id `user_id`. Authentication required.
-
 **Response Example:**
 ```json
-{"message": "Friend request sent"}
+{
+  "id": "68e2bc8d390fe44b0f398f4e",
+  "sender": "68cd793ca4a36f574952921b",
+  "receiver": "68d2bb9c8b1d2c3e4f5a6b7",
+  "status": "pending"
+}
 ```
 
 ### 2. Respond to friend request
@@ -400,7 +404,10 @@ These endpoints allow creating and responding to friend requests. The frontend u
 
 **Response Example:**
 ```json
-{"message": "Friend request accepted"}
+{
+  "id": "68e2bc8d390fe44b0f398f4e",
+  "status": "accepted"
+}
 ```
 
 ### 3. List friends / requests
@@ -408,21 +415,56 @@ These endpoints allow creating and responding to friend requests. The frontend u
 
 **Description:** Returns friend relationships and pending requests for the authenticated user.
 
+The friends list now returns both the other user’s id (so you can map/display the user) and a separate Friend record id (so you can act on the request). Use the former for UI and the latter for API actions
+
+list_friends returns:
+    - id — the other user’s id (string) — this matches the id you get from the users endpoints and should be used to look up/display user info in the UI
+    - request_id — the Friend record primary key (Friend.pk) — this is the unique id for that friend-request record and must be used when you call friend-level endpoints (respond / remove)
+Tests reflect this contract and assert:
+    - outgoing_requests[i]['id'] == str(fr_out.receiver.pk)
+    - outgoing_requests[i]['request_id'] == str(fr_out.pk)
+    - incoming_requests[i]['id'] == str(fr_in.sender.pk)
+    - incoming_requests[i]['request_id'] == str(fr_in.pk) Those tests pass locally, so the API is returning the values the frontend needs
+
 **Response Example:**
 ```json
 {
-  "friends": [ {"id": "2", "username": "bob"} ],
-  "incoming_requests": [ {"id": "3", "username": "carol"} ],
-  "outgoing_requests": [ {"id": "4", "username": "dave"} ]
+  "current_user_id": "68e2bc8d390fe44b0f398f4e",
+  "friends": [ {"id": "68d5d66921c840dea3433ff2", "username": "bob"} ],
+  "incoming_requests": [
+    {
+      "id": "68d5d66921c840dea3433ff3",      // other user's id (User.id) 
+      "request_id": "68e2bc96390fe44b0f398faa", // Friend record id 
+      "username": "carol",
+      "status": "pending"
+    }
+  ],
+  "outgoing_requests": [
+    {
+      "id": "68d5d66921c840dea3433ff4",
+      "request_id": "68e2bc96390fe44b0f398f4f",
+      "username": "dave",
+      "status": "pending"
+    }
+  ]
 }
 ```
 
-### 4. Remove friend
-**Endpoint:** `DELETE /friends/remove/:friend_id/`
+Notes:
+- `id` in the incoming/outgoing entries is the other user's id (User.id). Use this to map to user records in the UI
+- `request_id` is the Friend record primary key (Friend.pk). Use this id when calling friend-level endpoints.
 
-**Description:** Remove an existing friend relationship.
+Example: Cancel an outgoing request using `request_id`:
+```bash
+curl -i -X DELETE "http://localhost:8000/api/friends/remove/<REQUEST_ID>/" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 4. Remove friend / Cancel request
+
+**Endpoint:** `DELETE /friends/remove/:request_id/`
+
+**Description:** Remove an existing friend relationship or cancel an outgoing request. Use the Friend record id (`request_id`, the Friend.pk value) when calling this endpoint — this matches the `request_id` returned in the incoming/outgoing entries from the friends list. This endpoint is used both to remove accepted friends and to cancel the pending outgoing requests
 
 **Response Example:**
-```json
-{"message": "Friend removed"}
-```
+- HTTP 204 No Content (empty response body)
