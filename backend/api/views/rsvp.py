@@ -67,7 +67,7 @@ def create_rsvp(request):
 @permission_classes([IsAuthenticated])
 def get_rsvp_by_plan_id(request, plan_id):
     try:
-        rsvps = list(rsvp_collection.find({"plan_id": ObjectId(plan_id)}))
+        rsvps = list(rsvp_collection.find({"plan_id": str(plan_id)}))
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -84,9 +84,9 @@ def get_rsvp_by_plan_id(request, plan_id):
 @api_view(['GET'])
 @renderer_classes([JSONRenderer])
 @permission_classes([IsAuthenticated])
-def get_rsvp_by_user_id(request, user_id):
+def get_rsvp_by_user_id(request):
     try:
-        rsvps = list(rsvp_collection.find({"user_id": ObjectId(user_id)}))
+        rsvps = list(rsvp_collection.find({"user_id": str(request.user.id)}))
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -125,7 +125,7 @@ def delete_rsvp_by_plan_id(request, plan_id):
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
 
-    result = rsvp_collection.delete_one({"plan_id": ObjectId(plan_id)})
+    result = rsvp_collection.delete_one({"plan_id": plan_id})
 
     if result.deleted_count == 0:
         return Response({"error": "RSVP not found"},status=status.HTTP_404_NOT_FOUND)
