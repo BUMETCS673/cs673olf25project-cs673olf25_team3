@@ -22,8 +22,8 @@ export default function Friends() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTriggerChanges(true)
-    }, 60000);
+      updateUsersAndFriends();
+    }, 20000);
 
     return () => clearInterval(interval);
   }, [])
@@ -49,10 +49,17 @@ export default function Friends() {
     }
   };
 
+  const updateUsersAndFriends =  async () => {
+    setTimeout(() => {
+      loadAllUsers();
+      loadFriends();
+    }, "500");
+    
+  }
+
   useEffect(() => {
-    loadAllUsers();
-    loadFriends();
-    setTriggerChanges(false)
+
+    updateUsersAndFriends();
   }, [auth.accessToken, triggerchanges]);
 
   useEffect(() => {
@@ -78,15 +85,15 @@ export default function Friends() {
 
   }, [allUsers, friends])
 
-    function VariantButtons({variant, userID}){
+    function VariantButtons({variant, userID, requestID}){
 
       switch (variant) {
       case "current":
-        return <Button onClick={()=>{DeleteFriend(userID, auth.accessToken); setTriggerChanges(true)}}>Remove</Button>
+        return <Button onClick={()=>{DeleteFriend(userID, auth.accessToken).then(updateUsersAndFriends(), )}}>Remove</Button>
       case "receive":
-        return  <><Button onClick={()=>{RespondToFriendRequest(userID, 'accept', auth.accessToken); setTriggerChanges(true)}}>Accept</Button><Button onClick={()=>{RespondToFriendRequest(userID, 'reject', auth.accessToken); loadFriends()}}>Ignore</Button></>
+        return  <><Button onClick={()=>{RespondToFriendRequest(requestID, 'accept', auth.accessToken).then(updateUsersAndFriends(), )}}>Accept</Button><Button onClick={()=>{RespondToFriendRequest(requestID, 'reject', auth.accessToken).then(updateUsersAndFriends(), )}}>Ignore</Button></>
       case "send":
-        return  <Button onClick={()=>{SendFriendRequest(userID, auth.accessToken); setTriggerChanges(true)}}>Send</Button>
+        return  <Button onClick={()=>{SendFriendRequest(userID, auth.accessToken).then(updateUsersAndFriends(), )}}>Send</Button>
       default:
         return 
       }
@@ -99,7 +106,7 @@ export default function Friends() {
           listItems = friends.map(friend =>
           <li key={friend.id}>
             {friend.username}
-            <VariantButtons variant={variant} userID={friend.id}/>
+            <VariantButtons variant={variant} userID={friend.id} requestID={friend.request_id}/>
           </li>
           )
       }

@@ -12,12 +12,12 @@ Notes:
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 async function RespondToFriendRequest(
-  userID:String,
+  requestID:String,
   action:String,
   accessToken: String
 ) {
   try {
-    const response = await fetch(`${baseUrl}/api/friends/respond/${userID}/`, {
+    const response = await fetch(`${baseUrl}/api/friends/respond/${requestID}/`, {
       method: "POST", 
       headers: {
         "Content-Type": "application/json",
