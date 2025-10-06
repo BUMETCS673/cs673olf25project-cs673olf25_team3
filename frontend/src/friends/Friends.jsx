@@ -1,6 +1,17 @@
-import React from "react";
-// import FriendsList from "./FriendsList.jsx";
-import User from '../util.js';
+/*
+
+AI-generated: 0%
+From Documentation: 10% (from Button and MUI logic )
+Human-written: 90% (some based on Ashley's work, but mostly my own.)
+
+Notes:
+
+Layout structure and MUI component usage were adapted from documentation examples.
+
+Customizations, styling, and integration with the Logo component are fully human-written.
+
+*/
+
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { getUsers } from "./endpoints/getUsers.js";
@@ -16,7 +27,6 @@ export default function Friends() {
   const { auth } = useAuth();
   const [allUsers, setAllUsers] = useState([]);
   const [unconnectedUsers, setUnconnectedUsers] = useState([])
-  const [triggerchanges, setTriggerChanges]= useState(false)
   const [friends, setFriends] = useState([]);
 
 
@@ -60,7 +70,7 @@ export default function Friends() {
   useEffect(() => {
 
     updateUsersAndFriends();
-  }, [auth.accessToken, triggerchanges]);
+  }, [auth.accessToken]);
 
   useEffect(() => {
     if (allUsers.length > 0){
