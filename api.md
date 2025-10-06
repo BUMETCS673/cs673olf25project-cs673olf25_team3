@@ -419,10 +419,34 @@ These endpoints allow creating and responding to friend requests. The frontend u
 ```json
 {
   "current_user_id": "68e2bc8d390fe44b0f398f4e",
-  "friends": [ {"id": "2", "username": "bob"} ],
-  "incoming_requests": [ {"id": "3", "username": "carol"} ],
-  "outgoing_requests": [ {"id": "4", "username": "dave"} ]
+  "friends": [ {"id": "68d5d66921c840dea3433ff2", "username": "bob"} ],
+  "incoming_requests": [
+    {
+      "id": "68d5d66921c840dea3433ff3",      // other user's id (User.id) 
+      "request_id": "68e2bc96390fe44b0f398faa", // Friend record id 
+      "username": "carol",
+      "status": "pending"
+    }
+  ],
+  "outgoing_requests": [
+    {
+      "id": "68d5d66921c840dea3433ff4",
+      "request_id": "68e2bc96390fe44b0f398f4f",
+      "username": "dave",
+      "status": "pending"
+    }
+  ]
 }
+```
+
+Notes:
+- `id` in the incoming/outgoing entries is the other user's id (User.id). Use this to map to user records in the UI
+- `request_id` is the Friend record primary key (Friend.pk). Use this id when calling friend-level endpoints.
+
+Example: Cancel an outgoing request using `request_id`:
+```bash
+curl -i -X DELETE "http://localhost:8000/api/friends/remove/<REQUEST_ID>/" \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 ### 4. Remove friend
