@@ -35,7 +35,7 @@ def create_plan(request):
     data['created_by'] = str(request.user.id)
 
     # add current timestamp
-    data['created_at'] = datetime.now().isoformat()
+    data['created_at'] = datetime.now()
 
     # serialize the payload
     serializer = PlansSerializer(data=data)
@@ -56,6 +56,7 @@ def create_plan(request):
                 "id": str(result.inserted_id),
                 "data": data
             }, status=status.HTTP_201_CREATED)
+        
         except Exception as e:
             logger.exception("Error inserting plan into MongoDB")
             return Response(
