@@ -76,9 +76,9 @@ jobs:
           echo "MONGO_DATABASE_TLS=${{ secrets.MONGO_DATABASE_TLS }}" >> .env
           echo "MONGO_DATABASE_SSL=${{ secrets.MONGO_DATABASE_SSL }}" >> .env
       
-      - name: Run Tests
-        run: |
-          python manage.py test
+      - name: Run tests
+        working-directory: backend
+        run: pytest -v
 
   # Frontend Build
   frontend-build:

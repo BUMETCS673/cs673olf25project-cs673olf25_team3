@@ -1,3 +1,7 @@
+// vite.config.js
+/// <reference types="vitest" />
+/// <reference types="vite/client" />
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -11,5 +15,6 @@ export default defineConfig({
     globals: true, // Enables global test APIs without imports
     environment: 'jsdom',
     setupFiles: './src/setupTests.js', // Path to your test setup file
+    css: true,
   },
 })
