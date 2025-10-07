@@ -67,7 +67,7 @@ def get_collection(collection_name):
     return collection
 
 
-def query_collection( collection, query ):
+def query_collection( collection, query, orderby=None ):
     """
     Query a mongodb collection with the find method.
 
@@ -78,6 +78,8 @@ def query_collection( collection, query ):
     Returns:
         (list) - a list of the query
     """
+    if orderby:
+        return collection.find(query).sort(orderby)
     return collection.find(query)
 
 

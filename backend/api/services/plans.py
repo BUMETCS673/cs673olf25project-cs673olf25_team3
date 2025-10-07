@@ -70,7 +70,7 @@ def get_filtered_plans(filters, user):
     }
 
     # get the result
-    result = list(query_collection(plans, query))
+    result = list(query_collection(plans, query, {"start_time": 1}))
 
     return result
 
