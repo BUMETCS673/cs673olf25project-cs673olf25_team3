@@ -7,7 +7,7 @@
 from datetime import datetime
 from api.serializers.plans_serializer import PlansSerializer
 from api.utils.mongo import get_collection
-from api.services.plans import delete_plan_by_user, get_filtered_plans
+from api.services.plans import add_plan, delete_plan_by_user, get_filtered_plans
 from bson import ObjectId
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes, permission_classes, parser_classes
@@ -15,9 +15,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
-import logging
-logger = logging.getLogger(__name__)
-
 
 def get_plans_collection():
     return get_collection('plans')
@@ -43,22 +40,12 @@ def create_plan(request):
     # validate the payload
     if serializer.is_valid():
         try:
-            data = dict(serializer.validated_data)
-
-            allowed_fields = ["title", "description", "location", "start_time", "end_time","created_by", "created_at"]
-            plan_data = {key: data[key] for key in allowed_fields if key in data}
-
             # save the data
-            result = plans_collection.insert_one(plan_data)
+            result = add_plan(dict(serializer.validated_data))
 
-            return Response({
-                "message": "Plan created",
-                "id": str(result.inserted_id),
-                "data": data
-            }, status=status.HTTP_201_CREATED)
+            return Response( result, status=status.HTTP_201_CREATED)
         
         except Exception as e:
-            logger.exception("Error inserting plan into MongoDB")
             return Response(
                 {
                     "error": str(e)

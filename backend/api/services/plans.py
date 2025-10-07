@@ -5,9 +5,10 @@
 from datetime import datetime, timezone
 from bson import ObjectId
 from pymongo.errors import PyMongoError
-from api.utils.mongo import delete_document, get_collection, query_collection, query_one
-from api.services.friends import get_friends
+from api.serializers.plans_serializer import PlansSerializer
 from api.utils.datetime import parse_datetime_utc
+from api.utils.mongo import add_document, delete_document, get_collection, query_collection, query_one
+from api.services.friends import get_friends
 
 plans = get_collection('plans')
 
@@ -72,6 +73,21 @@ def get_filtered_plans(filters, user):
     result = list(query_collection(plans, query))
 
     return result
+
+
+def add_plan(data):
+
+    data = dict(data)
+
+    allowed_fields = ["title", "description", "location", "start_time", "end_time","created_by", "created_at"]
+    plan_data = {key: data[key] for key in allowed_fields if key in data}
+
+    # save the data
+    result = add_document(plans, plan_data)
+    plan_data["_id"] = str(result.inserted_id)
+
+    return {"status": 201, "message": "Plan created", "data": plan_data}
+
 
 def delete_plan_by_user(user_id, plan_id):
     """

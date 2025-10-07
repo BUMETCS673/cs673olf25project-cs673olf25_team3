@@ -80,6 +80,7 @@ def query_collection( collection, query ):
     """
     return collection.find(query)
 
+
 def query_one( collection, query ):
     """
     Query a mongodb collection with the find one method.
@@ -92,6 +93,20 @@ def query_one( collection, query ):
         (dictionary) - the result of the query
     """
     return collection.find_one(query)
+
+
+def add_document( collection, data ):
+    """
+    Query a mongodb collection with the find one method.
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the mongodb query
+
+    Returns:
+        (dictionary) - the result of the query
+    """
+    return collection.insert_one(data)
 
 
 def delete_document(collection, query):
