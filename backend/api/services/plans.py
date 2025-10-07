@@ -50,15 +50,12 @@ def get_filtered_plans(filters, user):
     # set user and friends filters
     if get_query_friends and get_query_friends.lower() in ['true', '1']:
         friends_list = get_friends(user)
-        print(f"friends_list: {friends_list}")
+
         if friends_list is None:
             friends_list = [] 
         created_bys = [str(user)] + [str(friend) for friend in friends_list]
     else:
-        print("Get user plans Lists only")
         created_bys = [str(user)]
-
-    print(f"created_by: {created_bys}")
 
     # create the query
     query = {
@@ -73,3 +70,4 @@ def get_filtered_plans(filters, user):
     result = list(query_collection(plans, query))
 
     return result
+

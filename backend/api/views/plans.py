@@ -81,8 +81,7 @@ def get_plans(request):
     
     # print(filters)
     plans = get_filtered_plans(filters, user_id)
-    # plans = get_all_plans()
-    print(plans)
+    
     # change plans ids to string
     for plan in plans:
         plan["_id"] = str(plan["_id"])
