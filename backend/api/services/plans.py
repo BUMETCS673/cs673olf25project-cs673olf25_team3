@@ -3,7 +3,9 @@
 # AI-generated: 0% 
 
 from datetime import datetime, timezone
-from api.utils.mongo import get_collection, query_collection
+from bson import ObjectId
+from pymongo.errors import PyMongoError
+from api.utils.mongo import delete_document, get_collection, query_collection, query_one
 from api.services.friends import get_friends
 from api.utils.datetime import parse_datetime_utc
 
@@ -71,3 +73,48 @@ def get_filtered_plans(filters, user):
 
     return result
 
+def delete_plan_by_user(user_id, plan_id):
+    """
+    Deletes a plan based if it belongs to the loggedin user.
+
+    Args:
+        user_id (string) - filter values for the query parameters
+        user (string) - the id of the user
+
+    Returns:
+        (list) - a list of plans based on the filter
+    """
+    # check if user owns plans
+
+    if not isinstance(plan_id, ObjectId):
+        plan_id = ObjectId(plan_id)
+
+    if not isinstance(user_id, ObjectId):
+        user_id = ObjectId(user_id)
+
+    try: 
+        plan = query_one(plans, {"_id": plan_id})
+
+        # check if plan exists
+        if not plan:
+            return {"status": 404, "error": "Plan not found."}
+
+        # check if user created the plan
+        if ObjectId(plan.get("created_by")) != user_id:
+            return {"status": 403, "error": "User unauthorized to delete this plan."}
+    
+        # delete the plan
+        result = delete_document(plans, {"_id": plan_id})
+
+        # successful deletion
+        if result.deleted_count > 0:
+            return {"status": 200, "message": f"Plan {str(plan_id)} deleted successfully."}
+        else:
+            # Plan may have been deleted between find and delete
+            return {"status": 404, "error": "Plan not found during deletion."}
+    
+    except PyMongoError as e:
+        return {"status": 500, "error": f"Database error: {e}"}
+    except Exception as e:
+        return {"status": 500, "error": f"Unexpected error: {e}"}
+        result = delete_document(plans, {"_id": plan_id})

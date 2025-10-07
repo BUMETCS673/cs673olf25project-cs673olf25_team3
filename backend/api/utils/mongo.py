@@ -79,3 +79,31 @@ def query_collection( collection, query ):
         (list) - a list of the query
     """
     return collection.find(query)
+
+def query_one( collection, query ):
+    """
+    Query a mongodb collection with the find one method.
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the mongodb query
+
+    Returns:
+        (dictionary) - the result of the query
+    """
+    return collection.find_one(query)
+
+
+def delete_document(collection, query):
+    """
+    Deletes a mongodb collection document given a query filter.
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the mongodb query
+
+    Returns:
+        (dictionary) - the result of the deletion
+    """
+    return collection.delete_one(query)
+    

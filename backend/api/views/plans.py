@@ -7,7 +7,7 @@
 from datetime import datetime
 from api.serializers.plans_serializer import PlansSerializer
 from api.utils.mongo import get_collection
-from api.services.plans import get_all_plans, get_filtered_plans
+from api.services.plans import delete_plan_by_user, get_filtered_plans
 from bson import ObjectId
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes, permission_classes, parser_classes
@@ -79,7 +79,6 @@ def get_plans(request):
     allowed_fields = ["start_time", "end_time", "friends"]
     filters = {key: request.GET[key] for key in allowed_fields if key in request.GET}
     
-    # print(filters)
     plans = get_filtered_plans(filters, user_id)
     
     # change plans ids to string
@@ -139,9 +138,10 @@ def delete_plan(request, plan_id):
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
-    result = plans_collection.delete_one({"_id": id})
+    # get user id
+    user_id = request.user.id
 
-    if result.deleted_count == 0:
-        return Response({"error": "Plan not found"},status=status.HTTP_404_NOT_FOUND )
+    # process deletion
+    result = delete_plan_by_user(user_id, id)
 
-    return Response({"message": f"Event {id} deleted successfully"}, status=status.HTTP_200_OK)
+    return Response(result, status=status.HTTP_200_OK)
