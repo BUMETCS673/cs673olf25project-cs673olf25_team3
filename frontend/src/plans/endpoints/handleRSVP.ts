@@ -62,9 +62,9 @@ export async function handleRSVP(planId: string, accessToken: string, isRSVPed: 
 /**
  * Get all RSVPs for a specific plan
  */
-export async function getRSVPByPlan(planId: string, accessToken: string): Promise<{ data: RSVP[] | null; errorMessage: string | null }> {
+export async function getRSVPByPlan(planId: string, accessToken: string): Promise<{ data: RSVP[] | null; errorMessage: string | null }> {  
   try {
-    const response = await fetch(`${baseUrl}/api/rsvp/plan/${planId}/`, {
+    const response = await fetch(`${baseUrl}/api/rsvp/plan/${planId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${accessToken}` },
     });
@@ -76,7 +76,7 @@ export async function getRSVPByPlan(planId: string, accessToken: string): Promis
       return { data: null, errorMessage };
     }
 
-    return { data, errorMessage: null };
+    return { data: data.data, errorMessage: null };
   } catch (err) {
     return { data: null, errorMessage: "Network error. Please try again." };
   }

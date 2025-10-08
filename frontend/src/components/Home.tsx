@@ -43,7 +43,7 @@ export default function Home() {
 
   useEffect(() => {
     loadPlans();
-  }, [auth.accessToken, filter]);
+  }, [auth.accessToken, filter, user?.id]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>

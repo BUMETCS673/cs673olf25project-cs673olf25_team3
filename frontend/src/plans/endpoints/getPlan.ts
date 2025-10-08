@@ -43,6 +43,7 @@ async function getPlans(accessToken: string, filter: boolean, userId?: string) {
 
         if (plan.created_by) {
           userData = await getUserById(plan.created_by, accessToken);
+
           if (!userData.errorMessage && userId === plan.created_by) {
             showEdit = true;
           }

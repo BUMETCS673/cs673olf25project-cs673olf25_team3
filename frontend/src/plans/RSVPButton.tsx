@@ -23,7 +23,7 @@ export default function RSVPButton({ planId, initialRSVP = false, onUpdate }: RS
     const fetchRSVP = async () => {
       const { data } = await getRSVPByPlan(planId, auth?.accessToken ?? "");
       if (data) {
-        const hasRSVPed = data.some((r) => r.user_id === user.id);
+        const hasRSVPed = data?.some((r) => r.user_id === user.id);
         setRsvped(hasRSVPed);
       }
     };
