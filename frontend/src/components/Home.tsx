@@ -22,15 +22,16 @@ import { useAuth } from "../auth/AuthContext";
 export default function Home() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("your");
+  const [filter, setFilter] = useState("friends");
 
-  const { auth } = useAuth();
+  const { auth, user } = useAuth();
 
   // Load plans from API
   const loadPlans = async () => {
     if (!auth.accessToken) return;
     setLoading(true);
-    const result = await getPlans(auth.accessToken);
+    const filteredPlans = filter === "friends";
+    const result = await getPlans(auth.accessToken, filteredPlans, user?.id ?? '');
     if (!result.errorMessage) {
       setPlans(result.data ?? []);
     } else {
@@ -42,13 +43,7 @@ export default function Home() {
 
   useEffect(() => {
     loadPlans();
-  }, [auth.accessToken]);
-
-  const filteredPlans = plans.filter((plan) => {
-    if (filter === "your") return true;
-    if (filter === "friends") return true;
-    return true;
-  });
+  }, [auth.accessToken, filter]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -81,9 +76,8 @@ export default function Home() {
             label="Filter Plans"
             onChange={(e) => setFilter(e.target.value)}
           >
+            <MenuItem value="friends">All Plans</MenuItem>
             <MenuItem value="your">Your Plans</MenuItem>
-            <MenuItem value="friends">Friends’ Plans</MenuItem>
-            <MenuItem value="all">All Plans</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -102,9 +96,9 @@ export default function Home() {
           <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
             <CircularProgress />
           </Box>
-        ) : filteredPlans.length > 0 ? (
+        ) : plans.length > 0 ? (
           <Stack spacing={2}>
-            {filteredPlans.map((plan) => (
+            {plans.map((plan) => (
               <PlanCard
                 key={plan._id}
                 plan={plan}
