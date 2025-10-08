@@ -144,7 +144,7 @@ class TestRSVPAPI:
         ]
         mock_collection.find.return_value = mock_rsvps
         
-        url = reverse("get-rsvp-by-user-id", kwargs={"user_id": str(self.user.id)})
+        url = reverse("get-rsvp-by-user-id")
         response = client.get(url)
         
         assert response.status_code == 200
@@ -160,7 +160,7 @@ class TestRSVPAPI:
         # Mock the find method to return empty list
         mock_collection.find.return_value = []
         
-        url = reverse("get-rsvp-by-user-id", kwargs={"user_id": str(self.user.id)})
+        url = reverse("get-rsvp-by-user-id")
         response = client.get(url)
         
         assert response.status_code == 404
@@ -212,11 +212,13 @@ class TestRSVPAPI:
         mock_result.deleted_count = 1
         mock_collection.delete_one.return_value = mock_result
         
-        url = reverse("delete-rsvp-by-plan-id", kwargs={"plan_id": self.plan_id})
+        # Use a valid ObjectId string for plan_id
+        valid_plan_id = str(ObjectId())
+        url = reverse("delete-rsvp-by-plan-id", kwargs={"plan_id": valid_plan_id})
         response = client.delete(url)
         
         assert response.status_code == 200
-        assert f"RSVP for plan {self.plan_id} deleted successfully" in response.data["message"]
+        assert f"RSVP for plan {valid_plan_id} deleted successfully" in response.data["message"]
 
     @patch('api.views.rsvp.rsvp_collection')
     def test_delete_rsvp_by_plan_id_not_found(self, mock_collection):
@@ -226,7 +228,9 @@ class TestRSVPAPI:
         mock_result.deleted_count = 0
         mock_collection.delete_one.return_value = mock_result
         
-        url = reverse("delete-rsvp-by-plan-id", kwargs={"plan_id": self.plan_id})
+        # Use a valid ObjectId string for plan_id
+        valid_plan_id = str(ObjectId())
+        url = reverse("delete-rsvp-by-plan-id", kwargs={"plan_id": valid_plan_id})
         response = client.delete(url)
         
         assert response.status_code == 404
@@ -251,6 +255,27 @@ class TestRSVPAPI:
             "plan_id": self.plan_id
         }
         response = client.post(url, data, format="json")
+        assert response.status_code == 401
+        
+        # Test get RSVP by plan ID without authentication
+        url = reverse("get-rsvp-by-plan-id", kwargs={"plan_id": self.plan_id})
+        response = client.get(url)
+        assert response.status_code == 401
+        
+        # Test get RSVP by user ID without authentication
+        url = reverse("get-rsvp-by-user-id")
+        response = client.get(url)
+        assert response.status_code == 401
+        
+        # Test delete RSVP by ID without authentication
+        rsvp_id = str(ObjectId())
+        url = reverse("delete-rsvp-by-id", kwargs={"rsvp_id": rsvp_id})
+        response = client.delete(url)
+        assert response.status_code == 401
+        
+        # Test delete RSVP by plan ID without authentication
+        url = reverse("delete-rsvp-by-plan-id", kwargs={"plan_id": self.plan_id})
+        response = client.delete(url)
         assert response.status_code == 401
 
     @patch('api.views.rsvp.rsvp_collection')
@@ -284,6 +309,30 @@ class TestRSVPAPI:
     def test_duplicate_rsvp_prevention(self, mock_collection):
         """Test that users cannot RSVP to the same plan multiple times"""
         # Mock find_one to return existing RSVP
+        existing_rsvp = {
+            "_id": ObjectId(),
+            "plan_id": self.plan_id,
+            "user_id": str(self.user.id),
+            "created_at": datetime.now().isoformat()
+        }
+        mock_collection.find_one.return_value = existing_rsvp
+        
+        url = reverse("create-rsvp")
+        data = {
+            "plan_id": self.plan_id
+        }
+        
+        response = client.post(url, data, format="json")
+        
+        assert response.status_code == 400
+        assert "already RSVP'd" in response.data["error"]
+        # Ensure insert_one was not called
+        mock_collection.insert_one.assert_not_called()
+
+    @patch('api.views.rsvp.rsvp_collection')
+    def test_create_rsvp_duplicate_prevention(self, mock_collection):
+        """Test that duplicate RSVP creation is prevented"""
+        # Mock find_one to return existing RSVP (duplicate)
         existing_rsvp = {
             "_id": ObjectId(),
             "plan_id": self.plan_id,

@@ -5,8 +5,6 @@
 name: Digital Ocean Staging CICD
 
 on:
-  push:
-    branches: [ "development" ]
   pull_request:
     branches: [ "development" ]
     types: [closed]
