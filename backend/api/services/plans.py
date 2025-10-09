@@ -1,6 +1,6 @@
 # Framework-generated: 0%
-# Human-written: 100%
-# AI-generated: 0% 
+# Human-written: 90%
+# AI-generated: 10% 
 
 from datetime import datetime, timezone
 from bson import ObjectId
@@ -11,6 +11,7 @@ from api.utils.mongo import add_document, delete_document, get_collection, query
 from api.services.friends import get_friends
 
 plans = get_collection('plans')
+dismissals = get_collection('dismissals')
 
 def get_all_plans():
     """
@@ -60,7 +61,7 @@ def get_filtered_plans(filters, user):
     else:
         created_bys = [str(user)]
 
-    # create the query
+    # build base query
     query = {
         "$and": [
             {"start_time": start_filter},
@@ -69,10 +70,78 @@ def get_filtered_plans(filters, user):
         ]
     }
 
+    # Exclude plans dismissed by this user (privacy: per-user only)
+    try:
+        user_str = str(user)
+        dismissed_cursor = query_collection(
+            dismissals,
+            {"user_id": user_str},
+        )
+        dismissed_ids = []
+        for d in dismissed_cursor:
+            pid = d.get("plan_id")
+            try:
+                dismissed_ids.append(ObjectId(pid))
+            except Exception:
+                # ignore invalid ids silently
+                continue
+        if dismissed_ids:
+            query["$and"].append({"_id": {"$nin": dismissed_ids}})
+    except Exception:
+        # if dismissal lookup fails, do not break feed; show all matching plans
+        pass
+
     # get the result
     result = list(query_collection(plans, query, {"start_time": 1}))
 
     return result
+
+
+def add_dismissal(user_id, plan_id):
+    """Record that a user dismissed a plan. Idempotent.
+
+    Stores a document { user_id: <str>, plan_id: <str>, dismissed_at: <datetime> }
+    """
+    doc = {
+        "user_id": str(user_id),
+        "plan_id": str(plan_id),
+        "dismissed_at": datetime.now(timezone.utc),
+    }
+    # use an upsert-like behavior: ensure only one dismissal per (user, plan)
+    existing = query_one(dismissals, {"user_id": doc["user_id"], "plan_id": doc["plan_id"]})
+    if existing:
+        return {"status": 204}
+    add_document(dismissals, doc)
+    return {"status": 204}
+
+
+def remove_dismissal(user_id, plan_id):
+    """Remove a user's dismissal for a plan (undismiss)"""
+    delete_document(
+        dismissals,
+        {"user_id": str(user_id), "plan_id": str(plan_id)}
+    )
+    return {"status": 204}
+
+
+def list_dismissed_plans(user_id):
+    """Return a list of plan documents that the user has dismissed
+
+    The returned docs are raw plan objects; callers should sanitize _id to string
+    """
+    user_str = str(user_id)
+    # collect plan ids from dismissals
+    plan_ids = []
+    for d in query_collection(dismissals, {"user_id": user_str}):
+        pid = d.get("plan_id")
+        try:
+            plan_ids.append(ObjectId(pid))
+        except Exception:
+            continue
+    if not plan_ids:
+        return []
+    results = list(query_collection(plans, {"_id": {"$in": plan_ids}}))
+    return results
 
 
 def add_plan(data):
@@ -186,6 +255,12 @@ def delete_plan_by_user(user_id, plan_id):
 
         # successful deletion
         if result.deleted_count > 0:
+            # cleanup: remove any dismissals for this plan to avoid orphans
+            try:
+                dismissals.delete_many({"plan_id": str(plan_id)})
+            except Exception:
+                # best-effort cleanup; do not block deletion result
+                pass
             return {"status": 200, "message": f"Plan {str(plan_id)} deleted successfully."}
         else:
             # Plan may have been deleted between find and delete

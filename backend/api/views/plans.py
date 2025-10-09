@@ -7,7 +7,7 @@
 from datetime import datetime
 from api.serializers.plans_serializer import PlansSerializer
 from api.utils.mongo import get_collection
-from api.services.plans import add_plan, delete_plan_by_user, get_filtered_plans, update_user_plan
+from api.services.plans import add_plan, delete_plan_by_user, get_filtered_plans, update_user_plan, add_dismissal, remove_dismissal, list_dismissed_plans
 from bson import ObjectId
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes, permission_classes, parser_classes
@@ -131,3 +131,35 @@ def delete_plan(request, plan_id):
     result = delete_plan_by_user(user_id, id)
 
     return Response(result, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def dismiss_plan(request, plan_id: str):
+    """Dismiss a plan from the current user's feed (private)"""
+    user_id = request.user.id
+    add_dismissal(user_id, plan_id)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def undismiss_plan(request, plan_id: str):
+    """Remove a prior dismissal so the plan reappears in the user's feed"""
+    user_id = request.user.id
+    remove_dismissal(user_id, plan_id)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def list_dismissed(request):
+    """Return the current user's dismissed plans as an array of plan objects"""
+    user_id = request.user.id
+    plans = list_dismissed_plans(user_id)
+    for p in plans:
+        p["_id"] = str(p["_id"])  # sanitize id to string
+    return Response(plans, status=status.HTTP_200_OK)
