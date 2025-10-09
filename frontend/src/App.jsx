@@ -20,6 +20,7 @@ import Home from './components/Home'
 import Banner from './components/Banner'
 import AuthProtectedRoute from './auth/AuthProtectedRoute'
 import AddPlanPage from './plans/AddPlanPage'
+import Friends from './friends/Friends'
 
 function App() {
   return (
@@ -62,6 +63,13 @@ function App() {
                 </AuthProtectedRoute>
               }
             />
+
+            <Route path="/friends" element={
+                <AuthProtectedRoute>
+                <Friends />
+                </AuthProtectedRoute>
+              } 
+            />   
 
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />

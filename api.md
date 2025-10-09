@@ -4,9 +4,13 @@
 
 - [Base URL](#base-url)
 - [Authentication](#authentication)
+- [User Registration & Profile](#user-registration--profile)
+    - [Register user](#1-register-user)
+    - [Get user profile](#2-get-user-profile)
+    - [Update user profile](#3-update-user-profile)
 - [Users](#users)
-    - [List Users](#1-list-users)
-    - [Get User by Id](#2-get-user-by-id)
+    - [List users](#1-list-users)
+    - [Get user by id](#2-get-user-by-id)
 - [Plans](#plans)
     - [Get plans](#1-get-plans)
     - [Create plan](#2-create-a-plan)
@@ -14,11 +18,17 @@
     - [Edit plan](#4-edit-a-plan)
     - [Delete plan](#5-delete-a-plan)
 - [Friend Requests](#friend-requests)
-    - [Create Friend Reques](#1-send-friend-request)
-    - [Respond to Friend Request](#2-respond-to-friend-request)
-    - [List Friends](#3-list-friends--requests)
-    - [Remove Friend](#4-remove-friend--cancel-request)
-
+    - [Send friend request](#1-send-friend-request)
+    - [Respond to friend request](#2-respond-to-friend-request)
+    - [List friends / requests](#3-list-friends--requests)
+    - [Remove friend / Cancel request](#4-remove-friend--cancel-request)
+- [RSVP](#rsvp)
+    - [Create RSVP](#1-create-rsvp)
+    - [Get RSVP by plan ID](#2-get-rsvp-by-plan-id)
+    - [Get RSVP by user ID](#3-get-rsvp-by-user-id)
+    - [Delete RSVP by ID](#4-delete-rsvp-by-id)
+    - [Delete RSVP by plan ID](#5-delete-rsvp-by-plan-id)
+- [Quick Curl Examples](#quick-curl-examples-copypaste)
 ## Base Url
 
 For local development the `base url` is
@@ -81,6 +91,112 @@ Authorization: Bearer <access-token>
 }
 ```
 
+## User Registration & Profile
+
+These endpoints handle user registration and profile management.
+
+### Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string | No | User ID (auto-generated) |
+| `username` | string | Yes | Unique username |
+| `email` | string | Yes | User's email address |
+| `first_name` | string | No | User's first name |
+| `last_name` | string | No | User's last name |
+| `date_of_birth` | date | No | User's date of birth (YYYY-MM-DD) |
+| `bio` | string | No | User's biography (max 500 characters) |
+| `date_joined` | datetime | No | Account creation timestamp |
+
+### 1. Register User
+**Endpoint:** `POST /register/`
+
+**Description:** Register a new user account and receive JWT tokens.
+
+**Request Body:**
+```json
+{
+  "username": "johndoe",
+  "email": "john@example.com",
+  "first_name": "John",
+  "last_name": "Doe",
+  "date_of_birth": "1990-01-01",
+  "bio": "Software developer",
+  "password": "securepassword123",
+  "password_confirm": "securepassword123"
+}
+```
+
+**Response Example:**
+```json
+{
+  "message": "User registered successfully",
+  "refresh": "eyJ0eXAiOiJKV1QiLCJh...",
+  "access": "eyJ0eXAiOiJKV1QiLCJhb..."
+}
+```
+
+### 2. Get User Profile
+**Endpoint:** `GET /profile/`
+
+**Description:** Get the current authenticated user's profile information.
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Response Example:**
+```json
+{
+  "id": "68cd793ca4a36f574952921b",
+  "username": "johndoe",
+  "email": "john@example.com",
+  "first_name": "John",
+  "last_name": "Doe",
+  "date_of_birth": "1990-01-01",
+  "bio": "Software developer",
+  "date_joined": "2024-01-15T10:30:00Z"
+}
+```
+
+### 3. Update User Profile
+**Endpoint:** `PUT /profile/update/` or `PATCH /profile/update/`
+
+**Description:** Update the current user's profile information. Use PATCH for partial updates.
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "first_name": "Johnny",
+  "last_name": "Smith",
+  "date_of_birth": "1990-01-01",
+  "bio": "Updated bio information"
+}
+```
+
+**Response Example:**
+```json
+{
+  "message": "Profile updated successfully",
+  "user": {
+    "id": "68cd793ca4a36f574952921b",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "first_name": "Johnny",
+    "last_name": "Smith",
+    "date_of_birth": "1990-01-01",
+    "bio": "Updated bio information",
+    "date_joined": "2024-01-15T10:30:00Z"
+  }
+}
+```
 
 ## Users
 
@@ -93,6 +209,7 @@ The Users endpoints are used by the frontend to search for users and display pub
 | `username` | string | Public username |
 | `first_name` | string | Optional first name |
 | `last_name` | string | Optional last name |
+| `bio` | string | Optional user biography (max 500 characters) |
 
 ### 1. List users
 **Endpoint:** `GET /users/`
@@ -107,8 +224,8 @@ Authorization: Bearer <access-token>
 **Response Example:**
 ```json
 [
-  {"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"},
-  {"id": "2", "username": "bob", "first_name": "Bob", "last_name": "Y"}
+  {"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z", "bio": "Software engineer"},
+  {"id": "2", "username": "bob", "first_name": "Bob", "last_name": "Y", "bio": "Designer"}
 ]
 ```
 
@@ -119,44 +236,13 @@ Authorization: Bearer <access-token>
 
 **Response Example:**
 ```json
-{"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z"}
+{"id": "1", "username": "alice", "first_name": "Alice", "last_name": "Z", "bio": "Software engineer"}
 ```
 
+**Error Response:**
+```json
 { "detail": "Not found." }
 ```
-
-### Quick curl examples (copy/paste)
-- Obtain token (use seeded user or create one via /api/register/):
-```bash
-curl -s -X POST http://localhost:8000/api/token/ \
-  -H "Content-Type: application/json" \
-  -d '{"username":"rachel.green","password":"password123"}' | jq
-```
-- List users:
-```bash
-curl -s http://localhost:8000/api/users/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
-```
-- Get user by id:
-```bash
-curl -s http://localhost:8000/api/users/<user_id>/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
-```
-
-4) Send a friend request to another user (replace <recipient_id>)
-```bash
-curl -s -X POST http://localhost:8000/api/friends/request/<recipient_id>/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
-```
-
-5) Respond to a friend request (accept)
-```bash
-curl -s -X POST http://localhost:8000/api/friends/respond/<request_id>/ \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"action":"accept"}' | jq
-```
-
 
 ## Plans
 
@@ -244,9 +330,9 @@ GET /api/plans/?start_time=2025-09-27T15:00:00Z&end_time=2025-10-30T15:00:00Z&fr
 
 ### 2. Create a Plan
 
-**Endpoint:** `GET /plans/add`
+**Endpoint:** `POST /plans/add`
 
-**Description:** Creates a plan.  
+**Description:** Create a new plan/event.  
 
 **Header:**
 ```
@@ -406,6 +492,7 @@ Authorization: Bearer <access-token>
 }
 ```
 
+
 ## Friend Requests
 
 These endpoints allow creating and responding to friend requests. The frontend uses these to send requests and accept/reject them.
@@ -500,3 +587,217 @@ curl -i -X DELETE "http://localhost:8000/api/friends/remove/<REQUEST_ID>/" \
 
 **Response Example:**
 - HTTP 204 No Content (empty response body)
+
+## RSVP
+
+These endpoints handle RSVP (Response to Invitation) functionality for plans.
+
+### Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `_id` | string | No | RSVP ID (auto-generated) |
+| `plan_id` | string | Yes | ID of the plan being RSVP'd to |
+| `user_id` | string | Yes | ID of the user RSVP'ing |
+| `created_at` | datetime | No | RSVP creation timestamp |
+
+### 1. Create RSVP
+**Endpoint:** `POST /rsvp/add`
+
+**Description:** Create an RSVP for a plan. Users can only RSVP once per plan.
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "plan_id": "68dabba350510db53d9af43d"
+}
+```
+
+**Response Example:**
+```json
+{
+  "message": "RSVP created",
+  "id": "68e2bc8d390fe44b0f398f4e",
+  "data": {
+    "plan_id": "68dabba350510db53d9af43d",
+    "user_id": "68cd793ca4a36f574952921b",
+    "created_at": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+### 2. Get RSVP by Plan ID
+**Endpoint:** `GET /rsvp/plan/:plan_id`
+
+**Description:** Get all RSVPs for a specific plan.
+
+**Path Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `plan_id` | string | Yes | Unique identifier of the plan (MongoDB ObjectId) |
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Response Example:**
+```json
+{
+  "data": [
+    {
+      "_id": "68e2bc8d390fe44b0f398f4e",
+      "plan_id": "68dabba350510db53d9af43d",
+      "user_id": "68cd793ca4a36f574952921b",
+      "created_at": "2024-01-15T10:30:00Z"
+    },
+    {
+      "_id": "68e2bc8d390fe44b0f398f4f",
+      "plan_id": "68dabba350510db53d9af43d",
+      "user_id": "68d2bb9c8b1d2c3e4f5a6b7",
+      "created_at": "2024-01-15T11:00:00Z"
+    }
+  ]
+}
+```
+
+### 3. Get RSVP by User ID
+**Endpoint:** `GET /rsvp/user`
+
+**Description:** Get all RSVPs for the current authenticated user.
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Response Example:**
+```json
+{
+  "data": [
+    {
+      "_id": "68e2bc8d390fe44b0f398f4e",
+      "plan_id": "68dabba350510db53d9af43d",
+      "user_id": "68cd793ca4a36f574952921b",
+      "created_at": "2024-01-15T10:30:00Z"
+    },
+    {
+      "_id": "68e2bc8d390fe44b0f398f5a",
+      "plan_id": "68d7528319852c1d249d3bbb",
+      "user_id": "68cd793ca4a36f574952921b",
+      "created_at": "2024-01-15T12:00:00Z"
+    }
+  ]
+}
+```
+
+### 4. Delete RSVP by ID
+**Endpoint:** `DELETE /rsvp/:rsvp_id/delete`
+
+**Description:** Delete a specific RSVP by its ID.
+
+**Path Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `rsvp_id` | string | Yes | Unique identifier of the RSVP (MongoDB ObjectId) |
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Response Example:**
+```json
+{
+  "message": "RSVP 68e2bc8d390fe44b0f398f4e deleted successfully"
+}
+```
+
+### 5. Delete RSVP by Plan ID
+**Endpoint:** `DELETE /rsvp/plan/:plan_id/delete`
+
+**Description:** Delete RSVP for a specific plan (useful when a plan is cancelled).
+
+**Path Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `plan_id` | string | Yes | Unique identifier of the plan (MongoDB ObjectId) |
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Response Example:**
+```json
+{
+  "message": "RSVP for plan 68dabba350510db53d9af43d deleted successfully"
+}
+```
+
+## Quick curl examples (copy/paste)
+- Obtain token (use seeded user or create one via /api/register/):
+```bash
+curl -s -X POST http://localhost:8000/api/token/ \
+  -H "Content-Type: application/json" \
+  -d '{"username":"rachel.green","password":"password123"}' | jq
+```
+- List users:
+```bash
+curl -s http://localhost:8000/api/users/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+- Get user by id:
+```bash
+curl -s http://localhost:8000/api/users/<user_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+
+4) Send a friend request to another user (replace <recipient_id>)
+```bash
+curl -s -X POST http://localhost:8000/api/friends/request/<recipient_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+
+5) Respond to a friend request (accept)
+```bash
+curl -s -X POST http://localhost:8000/api/friends/respond/<request_id>/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"accept"}' | jq
+```
+
+6) Register a new user
+```bash
+curl -s -X POST http://localhost:8000/api/register/ \
+  -H "Content-Type: application/json" \
+  -d '{"username":"newuser","email":"new@example.com","first_name":"New","last_name":"User","password":"password123","password_confirm":"password123"}' | jq
+```
+
+7) Get user profile
+```bash
+curl -s http://localhost:8000/api/profile/ \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" | jq
+```
+
+8) Create a plan
+```bash
+curl -s -X POST http://localhost:8000/api/plans/add \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"My Event","description":"A fun event","location":{"address1":"123 Main St","city":"Boston","state":"MA","zipcode":12345},"start_time":"2025-09-28 12:00:00","end_time":"2025-09-28 15:00:00"}' | jq
+```
+
+9) Create an RSVP
+```bash
+curl -s -X POST http://localhost:8000/api/rsvp/add \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"plan_id":"<PLAN_ID>"}' | jq
+```
