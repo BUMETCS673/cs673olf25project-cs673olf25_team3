@@ -30,6 +30,7 @@ urlpatterns = [
     # User endpoints
     path('register/', users.register_user, name='register_user'),
     path('profile/', users.get_user_profile, name='get_user_profile'),
+    path('profile/update/', users.update_user_profile, name='update_user_profile'),
     # Users listing & detail used by the frontend for user search / selection.
     # Both endpoints require authentication and return only minimal public fields
     # (id, username, first_name, last_name) to avoid leaking any private data
