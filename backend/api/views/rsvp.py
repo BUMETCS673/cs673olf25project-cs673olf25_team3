@@ -71,12 +71,10 @@ def get_rsvp_by_plan_id(request, plan_id):
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
-    if not rsvps:
-        return Response({"error": "RSVP not found"},status=status.HTTP_404_NOT_FOUND)
-    
-    # Convert ObjectIds to strings
-    for rsvp in rsvps:
-        rsvp["_id"] = str(rsvp["_id"])
+
+    if rsvps:
+        for rsvp in rsvps:
+            rsvp["_id"] = str(rsvp["_id"])
     
     return Response({"data": rsvps}, status=status.HTTP_200_OK)
 
@@ -90,12 +88,9 @@ def get_rsvp_by_user_id(request):
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
-    if not rsvps:
-        return Response({"error": "RSVP not found"},status=status.HTTP_404_NOT_FOUND)
-    
-    # Convert ObjectIds to strings
-    for rsvp in rsvps:
-        rsvp["_id"] = str(rsvp["_id"])
+    if rsvps:
+        for rsvp in rsvps:
+            rsvp["_id"] = str(rsvp["_id"])
     
     return Response({"data": rsvps}, status=status.HTTP_200_OK)
 
