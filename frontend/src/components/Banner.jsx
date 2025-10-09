@@ -1,7 +1,7 @@
 /*
 
-AI-generated: 0%
-From Documentation: 40% (from MUI documentation: AppBar, Toolbar, Box usage patterns, basic layout examples)
+AI-generated: 10%: Used to get logout button
+From Documentation: 30% (from MUI documentation: AppBar, Toolbar, Box usage patterns, basic layout examples)
 Human-written: 60% (logic: custom Banner component, Typography text, Logo placement, flex styling, color choices)
 
 Notes:
@@ -18,7 +18,18 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Logo from './Logo';
 
+import GroupIcon from '@mui/icons-material/Group';
+import HomeIcon from '@mui/icons-material/Home';
+import {IconButton} from '@mui/material';
+
+import { useAuth } from '../auth/AuthContext';
+import {Button} from '@mui/material';
+import { Link } from 'react-router-dom';
+import {Tooltip } from '@mui/material';
+
 function Banner(){
+    const { auth } = useAuth();
+
     return (<Box 
           sx={{
         display: "flex",
@@ -32,8 +43,27 @@ function Banner(){
                 <Typography align="center" variant="h4" component="div" color="rgb(66 33 111)">
                     PlanningJam
                 </Typography>
-                <Logo></Logo>
-          </div>
+                <Logo/>
+            </div>
+            {auth.accessToken && 
+              <div>
+                  <Tooltip title="Home">
+                    <IconButton size="large"  color="inherit" component={Link} to="/home" >
+                      <HomeIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Friends">
+                    <IconButton size="large"  color="inherit" component={Link} to="/friends" >
+                      <GroupIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Logout">
+                    <Button  color={"secondary"} component={Link} to="/logout" >
+                      Logout
+                    </Button>
+                  </Tooltip>
+              </div>
+              }
         </Toolbar>
       </AppBar>
     </Box>

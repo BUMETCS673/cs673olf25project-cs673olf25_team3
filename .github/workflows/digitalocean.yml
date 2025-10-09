@@ -7,6 +7,7 @@ name: Digital Ocean Production CICD
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   # Frontend CI
@@ -74,14 +75,15 @@ jobs:
           echo "MONGO_DATABASE_TLS=${{ secrets.MONGO_DATABASE_TLS }}" >> .env
           echo "MONGO_DATABASE_SSL=${{ secrets.MONGO_DATABASE_SSL }}" >> .env
       
-      - name: Run Tests
-        run: |
-          python manage.py test
+      - name: Run tests
+        working-directory: backend
+        run: pytest -v
 
   # Frontend Build
   frontend-build:
     needs: frontend-ci
     runs-on: ubuntu-latest
+    environment: production
     defaults:
       run:
         working-directory: frontend
@@ -116,6 +118,9 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_REGISTRY }}/planningjam:${{ steps.extract_version.outputs.version }}
             ${{ secrets.DOCKER_REGISTRY }}/planningjam:latest
+          build-args: |
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+            VITE_ALLOWED_HOSTS=${{ secrets.VITE_ALLOWED_HOSTS }}
 
   # Backend Build
   backend-build:   
