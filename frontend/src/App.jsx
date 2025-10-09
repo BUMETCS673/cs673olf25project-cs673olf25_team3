@@ -21,6 +21,9 @@ import Banner from './components/Banner'
 import AuthProtectedRoute from './auth/AuthProtectedRoute'
 import AddPlanPage from './plans/AddPlanPage'
 import Friends from './friends/Friends'
+import UserBio from './users/UserBio'
+import UserProfile from './users/UserProfile'
+import EditProfile from './users/EditProfile'
 
 function App() {
   return (
@@ -71,14 +74,26 @@ function App() {
               } 
             />
 
-            <Route
-              path="/users/:userId"
-              element={
+            <Route path="/users/:userId" element={
                 <AuthProtectedRoute>
                   < UserBio />
                 </AuthProtectedRoute>
               }
-            />   
+            />
+
+            <Route path="/profile" element={
+                <AuthProtectedRoute>
+                  < UserProfile />
+                </AuthProtectedRoute>
+              }
+            />
+
+            <Route path="/profile/edit" element={
+                <AuthProtectedRoute>
+                  < EditProfile />
+                </AuthProtectedRoute>
+              }
+            />       
 
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />

@@ -13,34 +13,37 @@ Prefilling the form and handling API error responses is human-authored.
 
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AddPlanForm from "./AddPlanForm";
-import { getPlanById } from "./endpoints/getPlanById";
-import { addPlan } from "./endpoints/addPlan";
-import { editPlan } from "./endpoints/editPlan";
 import { useAuth } from "../auth/AuthContext";
+import { getUserById } from "./endpoints/getUserById";
 
 export default function UserBio() {
   const { userId } = useParams<{ userId: string }>();
-  const navigate = useNavigate();
   const { auth } = useAuth();
+  const [initialData, setInitialData] = useState<any>(null);
 
 
   useEffect(() => {
     if (userId && auth.accessToken) {
       async function loadUserBio() {
-        const result = await getUserById(planId as string, auth.accessToken as string);
+        const result = await getUserById(userId as string, auth.accessToken as string);
         if ("errorMessage" in result && result.errorMessage) {
           console.error(result.errorMessage);
         } else {
           setInitialData(result);
         }
       }
-      loadPlan();
+      loadUserBio();
     }
-  }, [editMode, planId, auth.accessToken]);
+  }, [userId, auth.accessToken]);
 
 
 
   return (
-  );
+    <div>
+      {initialData && <div>Username: {initialData.username}</div>}
+      {initialData &&  <div>First Name: {initialData.first_name}</div>}
+      {initialData && <div>Last Name: {initialData.last_name}</div>}
+      {initialData && <div>Bio: {initialData.bio}</div>}
+    </div>
+  )
 }

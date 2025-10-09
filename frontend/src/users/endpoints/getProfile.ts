@@ -12,9 +12,9 @@ Notes:
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-async function getUserById(userId: string, accessToken: string) {
+async function getProfile(accessToken: string) {
   try {
-    const response = await fetch(`${baseUrl}/api/users/${userId}/`, {
+    const response = await fetch(`${baseUrl}/api/profile/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +31,7 @@ async function getUserById(userId: string, accessToken: string) {
         errorMessage = data;
       } else {
         errorMessage =
-          data?.message || data?.error || data?.detail || "Failed to fetch user";
+          data?.message || data?.error || data?.detail || "Failed to fetch profile";
       }
 
       return { errorMessage };
@@ -43,4 +43,4 @@ async function getUserById(userId: string, accessToken: string) {
   }
 }
 
-export { getUserById };
+export { getProfile };
