@@ -17,11 +17,14 @@
     - [Get plan by id](#3-get-plan-by-id)
     - [Edit plan](#4-edit-a-plan)
     - [Delete plan](#5-delete-a-plan)
+    - [Dismiss a plan](#6-dismiss-a-plan)
+    - [Undismiss a plan](#7-undismiss-a-plan)
+    - [List dismissed plans](#8-list-dismissed-plans)
 - [Friend Requests](#friend-requests)
-    - [Send friend request](#1-send-friend-request)
-    - [Respond to friend request](#2-respond-to-friend-request)
-    - [List friends / requests](#3-list-friends--requests)
-    - [Remove friend / Cancel request](#4-remove-friend--cancel-request)
+    - [Create Friend Request](#1-send-friend-request)
+    - [Respond to Friend Request](#2-respond-to-friend-request)
+    - [List Friends](#3-list-friends--requests)
+    - [Remove Friend](#4-remove-friend--cancel-request)
 - [RSVP](#rsvp)
     - [Create RSVP](#1-create-rsvp)
     - [Get RSVP by plan ID](#2-get-rsvp-by-plan-id)
@@ -29,6 +32,7 @@
     - [Delete RSVP by ID](#4-delete-rsvp-by-id)
     - [Delete RSVP by plan ID](#5-delete-rsvp-by-plan-id)
 - [Quick Curl Examples](#quick-curl-examples-copypaste)
+
 ## Base Url
 
 For local development the `base url` is
@@ -491,6 +495,111 @@ Authorization: Bearer <access-token>
     "message": "Plan 68da01e2fa068cbd5713d439 deleted successfully"
 }
 ```
+
+
+### 6. Dismiss a plan
+**Endpoint:** `POST /plans/:plan_id/dismiss`
+
+**Description:** Hides the plan from your feed. This is private (owner is not notified) and idempotent (repeated calls return the same result without side-effects).
+
+**Path Parameters:**
+| Parameter | Type   | Required | Description                          |
+|-----------|--------|----------|--------------------------------------|
+| `plan_id` | string | Yes      | Unique identifier of the plan (ObjectId) |
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Success Response:**
+```
+204 No Content
+```
+
+**Error Responses:**
+| Status | When                | Body (example)                                                        |
+|--------|---------------------|-----------------------------------------------------------------------|
+| 401    | Missing/invalid JWT | `{ "detail": "Authentication credentials were not provided." }`     |
+
+**Behavior:**
+- Idempotent: dismissing the same plan multiple times still returns 204 and has no extra effect.
+- If `plan_id` does not exist, the endpoint still returns 204 (no-op); your feed is unaffected.
+
+**Example (curl):**
+```bash
+curl -s -X POST http://localhost:8000/api/plans/<plan_id>/dismiss \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+### 7. Undismiss a plan (just included in case, optional if we need)
+**Endpoint:** `DELETE /plans/:plan_id/undismiss`
+
+**Description:** Removes your prior dismissal so the plan can appear in your feed again (based on usual filters and scopes).
+
+**Path Parameters:**
+| Parameter | Type   | Required | Description                          |
+|-----------|--------|----------|--------------------------------------|
+| `plan_id` | string | Yes      | Unique identifier of the plan (ObjectId) |
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Success Response:**
+```
+204 No Content
+```
+
+**Error Responses:**
+| Status | When                | Body (example)                                                        |
+|--------|---------------------|-----------------------------------------------------------------------|
+| 401    | Missing/invalid JWT | `{ "detail": "Authentication credentials were not provided." }`     |
+
+**Behavior:**
+- Idempotent: undismissing an already-visible plan still returns 204 and has no extra effect.
+- If `plan_id` does not exist, the endpoint still returns 204 (no-op).
+
+**Example (curl):**
+```bash
+curl -s -X DELETE http://localhost:8000/api/plans/<plan_id>/undismiss \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+```
+
+Notes for frontend:
+- GET /plans automatically excludes any plans the current user has dismissed.
+- GET /plans/:plan_id returns `{ "data": { ...plan } }` and never includes dismissal metadata.
+- When a plan is deleted by its owner, any private dismissal records for that plan are automatically cleaned up server-side.
+
+### 8. List dismissed plans (just included in case, optional if we need)
+**Endpoint:** `GET /plans/dismissed`
+
+**Description:** Returns a plain array of plan objects that the current user has dismissed. Shape matches `GET /plans` and all `_id` values are strings.
+
+**Header:**
+```
+Authorization: Bearer <access-token>
+```
+
+**Success Response:** `200 OK`
+
+**Response Example:**
+```json
+[
+  {
+    "_id": "68e55af5cc8a4ecf0441c731",
+    "title": "Surprise Birthday Party!",
+    "description": "...hide",
+    "location": { "address1": "1 main st", "city": "Boston", "state": "MA", "zipcode": 12345 },
+    "start_time": "2025-10-10T12:00:00",
+    "end_time": "2025-10-28T15:00:00",
+    "created_by": "68cd793ca4a36f574952921b",
+    "created_at": "2025-10-07T18:24:53.683000"
+  }
+]
+```
+
 
 
 ## Friend Requests

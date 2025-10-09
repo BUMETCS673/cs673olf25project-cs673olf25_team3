@@ -52,10 +52,13 @@ urlpatterns = [
 
     # Plans endpoints
     path('plans/', plans.get_plans, name='get-plans'),
+  path('plans/dismissed', plans.list_dismissed, name='list-dismissed-plans'),
     path('plans/add', plans.create_plan, name='create-plan'),
     path('plans/<str:plan_id>', plans.get_plans_by_id, name='get-plans-by-id'),
     path('plans/<str:plan_id>/edit', plans.update_plan, name='update-plan'),
     path('plans/<str:plan_id>/delete', plans.delete_plan, name='delete-plan'),
+  path('plans/<str:plan_id>/dismiss', plans.dismiss_plan, name='dismiss-plan'),
+  path('plans/<str:plan_id>/undismiss', plans.undismiss_plan, name='undismiss-plan'),
 
     # RSVP endpoints
     path('rsvp/add', rsvp.create_rsvp, name='create-rsvp'),
