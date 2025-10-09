@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { getPlans } from "../plans/endpoints/getPlan";
 import { useAuth } from "../auth/AuthContext";
+import { getDismissedPlans } from "../plans/endpoints/handleDismiss";
 
 export default function Home() {
   const [plans, setPlans] = useState<any[]>([]);
@@ -26,12 +27,19 @@ export default function Home() {
 
   const { auth, user } = useAuth();
 
-  // Load plans from API
+  // Load plans based on filter
   const loadPlans = async () => {
     if (!auth.accessToken) return;
     setLoading(true);
-    const filteredPlans = filter === "friends";
-    const result = await getPlans(auth.accessToken, filteredPlans, user?.id ?? '');
+
+    let result;
+
+    if (filter === "dismissed") {
+      result = await getDismissedPlans(auth.accessToken);
+    } else {
+      const filteredPlans = filter === "friends";
+      result = await getPlans(auth.accessToken, filteredPlans, user?.id ?? '');
+    }
     if (!result.errorMessage) {
       setPlans(result.data ?? []);
     } else {
@@ -58,7 +66,7 @@ export default function Home() {
         }}
       >
         <Typography variant="h5" fontWeight={600}>
-          Plans 
+          {filter === "dismissed" ? "Dismissed Plans" : "Plans"}
         </Typography>
 
         <PlansHeader />
@@ -78,6 +86,7 @@ export default function Home() {
           >
             <MenuItem value="friends">All Plans</MenuItem>
             <MenuItem value="your">Your Plans</MenuItem>
+            <MenuItem value="dismissed">Dismissed Plans</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -102,13 +111,14 @@ export default function Home() {
               <PlanCard
                 key={plan._id}
                 plan={plan}
-                onUpdate={loadPlans} // refresh after edit or delete
+                onUpdate={loadPlans}
+                filter={filter} 
               />
             ))}
           </Stack>
         ) : (
           <Typography sx={{ mt: 4, textAlign: "center" }}>
-            No plans available.
+            No {filter === "dismissed" ? "dismissed plans" : "plans"} available.
           </Typography>
         )}
       </Box>

@@ -7,6 +7,7 @@ Human contributions include all functional logic, API calls, state handling for 
 Error handling (alert) and dynamic username display are human-authored.
 */
 
+
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -23,12 +24,15 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useAuth } from "../auth/AuthContext";
 import { deletePlan } from "../plans/endpoints/deletePlan";
 import { useNavigate } from "react-router-dom";
 import RSVPButton from "./RSVPButton";
 import { getRSVPByPlan } from "../plans/endpoints/handleRSVP";
 import { getUserById } from "../users/endpoints/getUserById";
+import { dismissPlan, undismissPlan } from "../plans/endpoints/handleDismiss";
 
 interface Plan {
   _id: string;
@@ -53,9 +57,11 @@ interface Plan {
 export default function PlanCard({
   plan,
   onUpdate,
+  filter,
 }: {
   plan: Plan;
   onUpdate?: () => void;
+  filter?: string; // "friends" | "your" | "dismissed"
 }) {
   const { auth, user } = useAuth();
   const navigate = useNavigate();
@@ -63,8 +69,8 @@ export default function PlanCard({
   const [deleting, setDeleting] = useState(false);
   const [initialRSVP, setInitialRSVP] = useState(false);
   const [rsvpUsernames, setRsvpUsernames] = useState<string[]>([]);
+  const [processing, setProcessing] = useState(false);
 
-  // Fetch RSVPs for this plan on mount
   useEffect(() => {
     if (!auth.accessToken || !user) return;
 
@@ -103,9 +109,23 @@ export default function PlanCard({
     }
   };
 
-  const handleEdit = () => {
-    navigate(`/plans/edit/${plan._id}`);
+  const handleToggleDismiss = async () => {
+    if (!auth.accessToken) return;
+    setProcessing(true);
+
+    const isDismissed = filter === "dismissed";
+    const action = isDismissed ? undismissPlan : dismissPlan;
+    const { success, errorMessage } = await action(plan._id, auth.accessToken);
+
+    setProcessing(false);
+    if (success) {
+      onUpdate?.(); // Refresh after dismiss/undismiss
+    } else {
+      alert(errorMessage);
+    }
   };
+
+  const handleEdit = () => navigate(`/plans/edit/${plan._id}`);
 
   return (
     <>
@@ -137,11 +157,28 @@ export default function PlanCard({
                 </IconButton>
               </Box>
             ) : (
-              <RSVPButton
-                planId={plan._id}
-                initialRSVP={initialRSVP}
-                onUpdate={onUpdate}
-              />
+              <Box>
+                <RSVPButton
+                  planId={plan._id}
+                  initialRSVP={initialRSVP}
+                  onUpdate={onUpdate}
+                />
+
+                <IconButton
+                  aria-label={
+                    filter === "dismissed" ? "undismiss plan" : "dismiss plan"
+                  }
+                  onClick={handleToggleDismiss}
+                  disabled={processing}
+                  sx={{ ml: 1 }}
+                >
+                  {filter === "dismissed" ? (
+                    <VisibilityIcon />
+                  ) : (
+                    <VisibilityOffIcon />
+                  )}
+                </IconButton>
+              </Box>
             )
           }
         />
