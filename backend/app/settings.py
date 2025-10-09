@@ -150,6 +150,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django_mongodb_backend.fields.ObjectIdAutoField'
 
+# Custom User model
+# AUTH_USER_MODEL = 'api.User'  # Using UserProfile instead
+
 MIGRATION_MODULES = {
     'admin': 'mongo_migrations.admin',
     'auth': 'mongo_migrations.auth',

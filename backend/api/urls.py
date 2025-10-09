@@ -30,6 +30,7 @@ urlpatterns = [
     # User endpoints
     path('register/', users.register_user, name='register_user'),
     path('profile/', users.get_user_profile, name='get_user_profile'),
+    path('profile/update/', users.update_user_profile, name='update_user_profile'),
     # Users listing & detail used by the frontend for user search / selection.
     # Both endpoints require authentication and return only minimal public fields
     # (id, username, first_name, last_name) to avoid leaking any private data
@@ -62,7 +63,7 @@ urlpatterns = [
     # RSVP endpoints
     path('rsvp/add', rsvp.create_rsvp, name='create-rsvp'),
     path('rsvp/plan/<str:plan_id>', rsvp.get_rsvp_by_plan_id, name='get-rsvp-by-plan-id'),
-    path('rsvp/user/<str:user_id>', rsvp.get_rsvp_by_user_id, name='get-rsvp-by-user-id'),
+    path('rsvp/user', rsvp.get_rsvp_by_user_id, name='get-rsvp-by-user-id'),
     path('rsvp/<str:rsvp_id>/delete', rsvp.delete_rsvp_by_id, name='delete-rsvp-by-id'),
     path('rsvp/plan/<str:plan_id>/delete', rsvp.delete_rsvp_by_plan_id, name='delete-rsvp-by-plan-id'),
 ]
