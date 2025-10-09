@@ -118,6 +118,15 @@ def update_user_plan(user_id, plan_id, data):
         if ObjectId(plan.get("created_by")) != user_id:
             return {"status": 403, "error": "User unauthorized to update this plan."}
     
+        # convert dates to datetime object
+        if data["start_time"]:
+            start_date = data["start_time"]
+            data["start_time"] = datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+        if data["end_time"]:
+            end_date = data["end_time"]
+            data["end_time"] = datetime.strptime(end_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+
         query = {"_id": plan_id}
         updated_data = {"$set": data}
 
