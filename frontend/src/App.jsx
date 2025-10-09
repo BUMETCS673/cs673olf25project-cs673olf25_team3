@@ -69,6 +69,15 @@ function App() {
                 <Friends />
                 </AuthProtectedRoute>
               } 
+            />
+
+            <Route
+              path="/users/:userId"
+              element={
+                <AuthProtectedRoute>
+                  < UserBio />
+                </AuthProtectedRoute>
+              }
             />   
 
             <Route path="/login" element={<Login />} />
