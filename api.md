@@ -447,7 +447,7 @@ curl -s -X POST http://localhost:8000/api/plans/<plan_id>/dismiss \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
-### 7. Undismiss a plan (optional, just included here)
+### 7. Undismiss a plan (just included in case, optional if we need)
 **Endpoint:** `DELETE /plans/:plan_id/undismiss`
 
 **Description:** Removes your prior dismissal so the plan can appear in your feed again (based on usual filters and scopes).
@@ -487,7 +487,7 @@ Notes for frontend:
 - GET /plans/:plan_id returns `{ "data": { ...plan } }` and never includes dismissal metadata.
 - When a plan is deleted by its owner, any private dismissal records for that plan are automatically cleaned up server-side.
 
-### 8. List dismissed plans (optional, just included here)
+### 8. List dismissed plans (just included in case, optional if we need)
 **Endpoint:** `GET /plans/dismissed`
 
 **Description:** Returns a plain array of plan objects that the current user has dismissed. Shape matches `GET /plans` and all `_id` values are strings.
