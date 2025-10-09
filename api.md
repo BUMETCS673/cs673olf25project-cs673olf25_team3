@@ -220,7 +220,8 @@ GET /api/plans/?start_time=2025-09-27T15:00:00Z&end_time=2025-10-30T15:00:00Z&fr
         },
         "start_time": "2025-09-28T12:00:00",
         "end_time": "2025-09-28T15:00:00",
-        "created_by": "68cd793ca4a36f574952921b"
+        "created_by": "68cd793ca4a36f574952921b",
+        "created_at": "2025-09-20T12:00:00"
     },
     {
         "_id": "68e40ba613b957b16c9a84c4",
@@ -273,19 +274,24 @@ Content-Type: application/json
 **Response Example**:
 ```json
 {
-    "_id": "68dabba350510db53d9af43d",
-    "title": "Game Night", 
-    "description": "Lots of fun and laughters with friends.", 
-    "location": {
-        "name": "John's house",
-        "address1": "1 main st", 
-        "city": "Boston", 
-        "state": "MA", 
-        "zipcode": "12345"
-    },
-    "start_time": "2025-09-28T12:00:00Z",
-    "end_time": "2025-09-28T15:00:00Z",
-    "created_by": "68cd793ca4a36f574952921b"
+    "status": 201,
+    "message": "Plan created",
+    "data": {
+      "_id": "68dabba350510db53d9af43d",
+      "title": "Game Night", 
+      "description": "Lots of fun and laughters with friends.", 
+      "location": {
+          "name": "John's house",
+          "address1": "1 main st", 
+          "city": "Boston", 
+          "state": "MA", 
+          "zipcode": "12345"
+      },
+      "start_time": "2025-09-28T12:00:00Z",
+      "end_time": "2025-09-28T15:00:00Z",
+      "created_by": "68cd793ca4a36f574952921b",
+      "created_at": "2025-09-20T12:00:00"
+    }
 }
 ```
 
@@ -307,18 +313,21 @@ Authorization: Bearer <access-token>
 **Response Example:**
 ```json
 {
-    "_id": "68dabba350510db53d9af43d",
-    "title": "Game Night", 
-    "description": "Lots of fun and laughters with friends.", 
-    "location": {
-        "address1": "1 main st", 
-        "city": "Boston", 
-        "state": "MA", 
-        "zipcode": "12345"
-    },
-    "start_time": "2025-09-28T12:00:00Z",
-    "end_time": "2025-09-28T15:00:00Z",
-    "created_by": "68cd793ca4a36f574952921b"
+    "data": {
+        "_id": "68e55af5cc8a4ecf0441c731",
+        "title": "Birthday Party!",
+        "description": "Lots of fun and laughters with friends.",
+        "location": {
+            "address1": "1 main st",
+            "city": "Boston",
+            "state": "MA",
+            "zipcode": 12345
+        },
+        "start_time": "2025-10-10T12:00:00",
+        "end_time": "2025-10-28T15:00:00",
+        "created_by": "68cd793ca4a36f574952921b",
+        "created_at": "2025-10-07T18:24:53.683000"
+    }
 }
 ```
 
@@ -326,7 +335,7 @@ Authorization: Bearer <access-token>
 
 **Endpoint:** `PUT /plans/:plan_id/edit`
 
-**Description:** Edits a plan with a given id.  
+**Description:** Edits a plan with a given id. Only the user who created the plan is authorized to update the plan. 
 
 **Path Parameters:**
 | Parameter   | Type   | Required | Description                |
@@ -339,7 +348,7 @@ Authorization: Bearer <access-token>
 Content-Type: application/json
 ```
 
-**Request Body**:
+**Request Body Example**:
 
 Update the plan title
 
@@ -352,19 +361,24 @@ Update the plan title
 **Response Example**:
 ```json
 {
-    "_id": "68dabba350510db53d9af43d",
-    "title": "Alex's Game Night Party!", 
-    "description": "Lots of fun and laughters with friends.", 
-    "location": {
-        "name": "John's house",
-        "address1": "1 main st", 
-        "city": "Boston", 
-        "state": "MA", 
-        "zipcode": "12345"
-    },
-    "start_time": "2025-09-28T12:00:00Z",
-    "end_time": "2025-09-28T15:00:00Z",
-    "created_by": "68cd793ca4a36f574952921b"
+    "status": 200,
+    "message": "Plan 68dabba350510db53d9af43d updated successfully.",
+    "data": {
+      "_id": "68dabba350510db53d9af43d",
+      "title": "Alex's Game Night!", 
+      "description": "Lots of fun and laughters with friends.", 
+      "location": {
+          "name": "John's house",
+          "address1": "1 main st", 
+          "city": "Boston", 
+          "state": "MA", 
+          "zipcode": "12345"
+      },
+      "start_time": "2025-09-28T12:00:00Z",
+      "end_time": "2025-09-28T15:00:00Z",
+      "created_by": "68cd793ca4a36f574952921b",
+      "created_at": "2025-09-07T18:53:14.173000"
+    }
 }
 ```
 
@@ -372,7 +386,7 @@ Update the plan title
 
 **Endpoint:** `DELETE /plans/:plan_id/delete`
 
-**Description:** Deletes a plan with a given id.  
+**Description:** Deletes a plan with a given id. Only an authorized user can delete plan if they are the creator of the plan. 
 
 **Path Parameters:**
 | Parameter   | Type   | Required | Description                |
@@ -385,8 +399,9 @@ Authorization: Bearer <access-token>
 ```
 
 **Response Example**:
-```
+```json
 {
+    "status": 200,
     "message": "Plan 68da01e2fa068cbd5713d439 deleted successfully"
 }
 ```

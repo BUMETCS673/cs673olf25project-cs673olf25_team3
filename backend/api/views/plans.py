@@ -7,7 +7,7 @@
 from datetime import datetime
 from api.serializers.plans_serializer import PlansSerializer
 from api.utils.mongo import get_collection
-from api.services.plans import add_plan, delete_plan_by_user, get_filtered_plans
+from api.services.plans import add_plan, delete_plan_by_user, get_filtered_plans, update_user_plan
 from bson import ObjectId
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes, permission_classes, parser_classes
@@ -99,22 +99,20 @@ def get_plans_by_id(request, plan_id):
 @permission_classes([IsAuthenticated])
 def update_plan(request, plan_id):
     try:
-        id = ObjectId(plan_id)  # Convert string ID to ObjectId
+        id = ObjectId(plan_id)
     except Exception:
         return Response({"error": "Invalid ID"}, status=status.HTTP_400_BAD_REQUEST)
     
-    result = plans_collection.update_one(
-        {"_id": id},
-        {"$set": request.data}
-    )
+    user_id = request.user.id
 
-    if result.matched_count == 0:
-        return Response({"error": "Plan not found"}, status=status.HTTP_404_NOT_FOUND)
+    serializer = PlansSerializer(data=request.data, partial=True)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    plan = plans_collection.find_one({"_id": id})
-    plan["_id"] = str(plan["_id"])  # convert ObjectId to string
+    # process plan updates
+    result = update_user_plan(user_id, plan_id, request.data)
 
-    return Response({"data": plan}, status=status.HTTP_200_OK)
+    return Response(result, status=status.HTTP_200_OK)
 
 
 @api_view(['DELETE'])
