@@ -1,3 +1,14 @@
+/*
+AI-generated code: 25% (Tool: ChatGPT; assisted with component structure and API integration)
+Human-written code: 75% (logic flow, useEffect, state management, and event handling)
+
+Notes:
+- Core logic for fetching and toggling RSVP status is human-written.
+- AI assistance was used for refining MUI component usage and JSX layout.
+- Error handling and loading state were adapted manually.
+- Final integration with AuthContext and endpoints was implemented by a human.
+*/
+
 import { useState, useEffect } from "react";
 import { IconButton, Tooltip } from "@mui/material";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
@@ -8,7 +19,7 @@ import { useAuth } from "../auth/AuthContext";
 interface RSVPButtonProps {
   planId: string;
   initialRSVP?: boolean;
-  onUpdate?: () => void; // optional callback after RSVP change
+  onUpdate?: () => void;
 }
 
 export default function RSVPButton({ planId, initialRSVP = false, onUpdate }: RSVPButtonProps) {
@@ -16,7 +27,6 @@ export default function RSVPButton({ planId, initialRSVP = false, onUpdate }: RS
   const [rsvped, setRsvped] = useState(initialRSVP);
   const [loading, setLoading] = useState(false);
 
-  // Optional: fetch initial RSVP state from backend
   useEffect(() => {
     if (!auth.accessToken || !planId || !user) return;
 
@@ -40,7 +50,7 @@ export default function RSVPButton({ planId, initialRSVP = false, onUpdate }: RS
 
     if (result.success) {
       setRsvped(!rsvped);
-      onUpdate?.(); // refresh plans if needed
+      onUpdate?.();
     } else {
       alert(result.errorMessage);
     }

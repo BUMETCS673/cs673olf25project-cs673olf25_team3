@@ -45,8 +45,8 @@ export async function handleRSVP(planId: string, accessToken: string, isRSVPed: 
 
   try {
     const response = await fetch(endpoint, options);
-    const data = await response.json().catch(() => ({})); // in case DELETE has no body
-
+    const data = await response.json().catch(() => ({}));
+  
     if (!response.ok) {
       const errorMessage = data?.message || data?.error || data?.detail || "Failed to update RSVP.";
       return { success: false, errorMessage };
