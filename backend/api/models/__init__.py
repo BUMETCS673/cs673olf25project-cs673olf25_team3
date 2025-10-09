@@ -4,5 +4,6 @@ Exports models for convenient imports. Keeps backward compatibility for `from ap
 """
 
 from .friends_models import Friend
+from .user_models import UserProfile
 
-__all__ = ["Friend"]
+__all__ = ["Friend", "UserProfile"]
