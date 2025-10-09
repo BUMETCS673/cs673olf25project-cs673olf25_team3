@@ -1,3 +1,7 @@
+# Framework-generated: 0%
+# Human-written: 5%
+# AI-generated: 95%
+
 """
 User Profile model for Planning Jam application
 

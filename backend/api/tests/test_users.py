@@ -9,8 +9,8 @@ Module uses pytest with Django's test database to validate these core user funct
 - Profile field validation and error handling
 """
 # Framework-generated: 0%
-# Human-written: 80%
-# AI-generated: 20%
+# Human-written: 20%
+# AI-generated: 80%
 
 import pytest
 from rest_framework import status
