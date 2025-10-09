@@ -17,7 +17,7 @@ from rest_framework.decorators import api_view, renderer_classes, permission_cla
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from django.contrib.auth import get_user_model
-from ..serializers.auth_serializer import UserRegistrationSerializer, UserSerializer
+from ..serializers.auth_serializer import UserRegistrationSerializer, UserSerializer, UserProfileUpdateSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 # from django.shortcuts import render
@@ -65,6 +65,30 @@ def get_user_profile(request):
     return Response(serializer.data)
 
 
+@api_view(['PUT', 'PATCH'])
+@renderer_classes([JSONRenderer])
+@permission_classes([IsAuthenticated])
+def update_user_profile(request):
+    """
+    Update current user profile
+    
+    Allowed fields: first_name, last_name, date_of_birth, bio
+    """
+    user = request.user
+    serializer = UserProfileUpdateSerializer(user, data=request.data, partial=request.method == 'PATCH')
+    
+    if serializer.is_valid():
+        serializer.save()
+        # Return updated profile data
+        updated_serializer = UserSerializer(user)
+        return Response({
+            "message": "Profile updated successfully",
+            "user": updated_serializer.data
+        }, status=status.HTTP_200_OK)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 # New endpoints: list users and get user detail
 @api_view(['GET'])
 @renderer_classes([JSONRenderer])
@@ -73,11 +97,12 @@ def list_users(request):
     """
     List users for frontend user search.
 
-    Returns a list of users with minimal public fields:
+    Returns a list of users with public fields:
     - id (string)
     - username
     - first_name
     - last_name
+    - bio (if available)
     """
     # Basic pagination/search could be implemented later. For now return all users
     users = User.objects.all()
@@ -85,15 +110,14 @@ def list_users(request):
     # Use the existing UserSerializer to normalize field names.
     serializer = UserSerializer(users, many=True)
 
-    # Only expose a minimal subset for privacy and frontend needs
-    # The serializer may present the user's primary key under different names
-    # depending on the auth backend; try common keys and fall back to username
+    # Expose public fields including bio for user search
     data = [
         {
             'id': u.get('id') or u.get('pk') or u.get('user_id') or u.get('username'),
             'username': u.get('username'),
             'first_name': u.get('first_name', ''),
             'last_name': u.get('last_name', ''),
+            'bio': u.get('bio', ''),
         }
         for u in serializer.data
     ]
@@ -106,8 +130,8 @@ def list_users(request):
 @permission_classes([IsAuthenticated])
 def get_user(request, user_id):
     """
-    Get public profile for a user by id (string). Returns the same minimal fields
-    as list_users for use by the frontend when showing search results or profiles.
+    Get public profile for a user by id (string). Returns public fields
+    for use by the frontend when showing search results or profiles.
     """
     # Lookup the user by primary key (string form); return 404 if missing
     try:
@@ -115,7 +139,7 @@ def get_user(request, user_id):
     except User.DoesNotExist:
         return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # Normalize serialized data to the minimal public shape used by the frontend
+    # Normalize serialized data to the public shape used by the frontend
     serializer = UserSerializer(user)
     u = serializer.data
     data = {
@@ -123,6 +147,7 @@ def get_user(request, user_id):
         'username': u.get('username'),
         'first_name': u.get('first_name', ''),
         'last_name': u.get('last_name', ''),
+        'bio': u.get('bio', ''),
     }
 
     return Response(data)
