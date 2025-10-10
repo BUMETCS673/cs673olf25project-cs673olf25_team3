@@ -12,8 +12,8 @@ Notes:
 import dayjs, { Dayjs } from "dayjs";
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  const formatDate = (dateString: string) => {
-    const selectedDate = dayjs(dateString)
+  const formatDate = (dateString: Dayjs) => {
+     const selectedDate = dateString
      let toReturn = selectedDate.year() +"-"+ String(selectedDate.month()+1).padStart(2, '0') + "-"+ String(selectedDate.date()).padStart(2, '0');
      return toReturn  
   } 
@@ -22,13 +22,13 @@ async function updateProfile(
   profileDate:{
     first_name: string;
     last_name: string;
-    date_of_birth: string;
+    date_of_birth: Dayjs | string;
     bio: string;
   },
   accessToken: String
 ) {
   try {
-    profileDate.date_of_birth = formatDate(profileDate.date_of_birth)
+    profileDate.date_of_birth = formatDate(<Dayjs>profileDate.date_of_birth)
     const response = await fetch(`${baseUrl}/api/profile/update/`, {
       method: "PUT", 
       headers: {

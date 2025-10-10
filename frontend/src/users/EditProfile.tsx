@@ -64,7 +64,7 @@ export default function EditProfile() {
       setFormData({
         first_name: initialData.first_name || "",
         last_name: initialData.last_name ||"",
-        date_of_birth: dayjs(new Date(initialData.date_of_birth)).add(1, "day"),
+        date_of_birth: initialData.date_of_birth ? dayjs(new Date(initialData.date_of_birth)).add(1, "day") : null,
         bio: initialData.bio || "",
       });
     }
@@ -81,7 +81,7 @@ export default function EditProfile() {
     result = await updateProfile(formData, auth.accessToken);
 
     if (!result.errorMessage) {
-        navigate("/profile"); // redirect to home after success
+      navigate('/profile/')
     } else {
       return result.errorMessage;
     }
@@ -93,6 +93,7 @@ export default function EditProfile() {
     const result = await handleFormSubmit(formData);
 
     if (result) {
+      debugger
       const newErrors: Record<string, string> = {};
       if (typeof result === "object") {
         Object.entries(result).forEach(([field, messages]) => {
@@ -111,7 +112,7 @@ export default function EditProfile() {
     } else {
       // success
       setErrors({});
-      // navigate('/profile')
+      navigate('/profile/')
     }
   };
 
@@ -144,7 +145,7 @@ export default function EditProfile() {
 
         <DateTimePicker
           label="Date of Birth"
-          value={formData.date_of_birth}
+          value={dayjs(formData.date_of_birth)}
           onChange={(newValue) => handleChange("date_of_birth", newValue)}
           slotProps={{
             textField: {
@@ -154,7 +155,7 @@ export default function EditProfile() {
               helperText: errors.date_of_birth,
             },
           }}
-          views={['year', 'day']}
+          views={['year', 'month', 'day']}
         />
 
         <TextField
