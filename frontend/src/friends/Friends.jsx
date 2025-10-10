@@ -20,6 +20,7 @@ import { SendFriendRequest } from "./endpoints/sendFriendRequest.js";
 import { DeleteFriend } from "./endpoints/deleteFriend.js";
 import { RespondToFriendRequest } from "./endpoints/respondToFriendRequest.js";
 import { Button } from "@mui/material";
+import UserLink from "../users/UserLink.js";
 
 
 export default function Friends() {
@@ -115,7 +116,7 @@ export default function Friends() {
       if (friends){
           listItems = friends.map(friend =>
           <li key={friend.id}>
-            {friend.username}
+             <UserLink userId={friend.id}>{friend.username}</UserLink>
             <VariantButtons variant={variant} userID={friend.id} requestID={friend.request_id}/>
           </li>
           )

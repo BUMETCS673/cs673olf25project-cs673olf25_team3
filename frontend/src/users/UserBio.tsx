@@ -15,11 +15,14 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getUserById } from "./endpoints/getUserById";
+import { getProfile } from "./endpoints/getProfile";
 
 export default function UserBio() {
   const { userId } = useParams<{ userId: string }>();
   const { auth } = useAuth();
   const [initialData, setInitialData] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -35,6 +38,26 @@ export default function UserBio() {
       loadUserBio();
     }
   }, [userId, auth.accessToken]);
+
+    useEffect(() => {
+        if (auth.accessToken) {
+            async function loadUserBio() {
+                const result = await getProfile(auth.accessToken as string);
+                if ("errorMessage" in result && result.errorMessage) {
+                    console.error(result.errorMessage);
+                } else {
+                    setProfile(result);
+                }
+            }
+            loadUserBio();
+        }
+    }, [auth.accessToken]);
+
+      useEffect(() => {
+        if (userId == profile?.id){
+            navigate("/profile/")
+        }
+    }, [profile])
 
 
 
