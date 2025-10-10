@@ -93,7 +93,6 @@ export default function EditProfile() {
     const result = await handleFormSubmit(formData);
 
     if (result) {
-      debugger
       const newErrors: Record<string, string> = {};
       if (typeof result === "object") {
         Object.entries(result).forEach(([field, messages]) => {
