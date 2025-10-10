@@ -19,10 +19,9 @@ import { Button } from "@mui/material";
 
 export default function UserBio() {
   const { auth } = useAuth();
-const [initialData, setInitialData] = useState<any>(null);
-
-
-const navigate = useNavigate();
+  const [initialData, setInitialData] = useState<any>(null);
+  const navigate = useNavigate();
+  
   useEffect(() => {
     if (auth.accessToken) {
       async function loadUserBio() {

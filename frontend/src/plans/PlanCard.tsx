@@ -18,6 +18,7 @@ import { useAuth } from "../auth/AuthContext";
 import { deletePlan } from "../plans/endpoints/deletePlan";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import UserLink from "../users/UserLink";
 
 interface Plan {
   _id: string;
@@ -35,6 +36,7 @@ interface Plan {
   created_by: string;
   user: {
     username: string;
+    id: string;
   }
 }
 
@@ -70,7 +72,7 @@ export default function PlanCard({ plan, onUpdate }: { plan: Plan; onUpdate?: ()
           <>
             {/* Username */}
             <Typography variant="subtitle2" color="text.primary">
-              👤 Hosted By: {plan.user?.username || "Unknown User"}
+              👤 Hosted By: <UserLink userId={plan.user?.id || ""}>{plan.user?.username || "Unknown User"}</UserLink>
             </Typography>
 
             {/* Time range */}
