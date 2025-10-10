@@ -1,3 +1,5 @@
+// 
+// human-generated: 100%
 
 import { ReactNode, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -11,11 +13,9 @@ interface UserLinkProps {
 
 
 export default function UserLink({ children, userId }: UserLinkProps){
-      const { auth } = useAuth();
       const [path, setPath] = useState<any>(null);
 
     
-
     useEffect(() => {
         setPath("/users/"+userId)
     }, [])

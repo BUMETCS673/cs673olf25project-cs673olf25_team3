@@ -81,7 +81,7 @@ export default function AddPlanForm() {
     result = await updateProfile(formData, auth.accessToken);
 
     if (!result.errorMessage) {
-      navigate("/home"); // redirect to home after success
+      navigate("/profile"); // redirect to home after success
     } else {
       return result.errorMessage;
     }
