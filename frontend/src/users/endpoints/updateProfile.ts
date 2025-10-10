@@ -19,7 +19,7 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
   } 
 
 async function updateProfile(
-  profileDate:{
+  profileData:{
     first_name: string;
     last_name: string;
     date_of_birth: Dayjs | string;
@@ -28,14 +28,17 @@ async function updateProfile(
   accessToken: String
 ) {
   try {
-    profileDate.date_of_birth = formatDate(<Dayjs>profileDate.date_of_birth)
+    if (profileData.date_of_birth != null){
+      profileData.date_of_birth = formatDate(<Dayjs>profileData.date_of_birth)
+    }
+    
     const response = await fetch(`${baseUrl}/api/profile/update/`, {
       method: "PUT", 
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(profileDate)
+      body: JSON.stringify(profileData)
     });
 
     const data = await response.json();

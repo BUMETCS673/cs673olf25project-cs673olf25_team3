@@ -139,7 +139,7 @@ export default function EditProfile() {
           fullWidth
           margin="normal"
           error={!!errors.last_name}
-          helperText={errors.titlast_namee}
+          helperText={errors.last_name}
         />
 
         <DateTimePicker
@@ -179,6 +179,9 @@ export default function EditProfile() {
           </Button>
           <Button
           variant="outlined"
+          onClick={() => {
+            navigate('/profile')
+          }}
         >
           Cancel
         </Button>
