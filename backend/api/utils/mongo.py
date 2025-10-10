@@ -65,3 +65,77 @@ def get_collection(collection_name):
         collection = collection._collection
 
     return collection
+
+
+def query_collection( collection, query, orderby=None ):
+    """
+    Query a mongodb collection with the find method.
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the mongodb query
+
+    Returns:
+        (list) - a list of the query
+    """
+    if orderby:
+        return collection.find(query).sort(orderby)
+    return collection.find(query)
+
+
+def query_one( collection, query ):
+    """
+    Query a mongodb collection with the find one method.
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the mongodb query
+
+    Returns:
+        (dictionary) - the result of the query
+    """
+    return collection.find_one(query)
+
+
+def add_document( collection, data ):
+    """
+    Query a mongodb collection document with the find one method.
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the mongodb query
+
+    Returns:
+        (dictionary) - the result of the query
+    """
+    return collection.insert_one(data)
+
+
+def update_document(collection, query, updated_data):
+    """
+    Uddates a mongodb collection document
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the document to filter
+        updated_data (dictionary) - the mongodb data to be updated
+
+    Returns:
+        (dictionary) - the result of the query
+    """
+    return collection.update_one(query, updated_data)
+
+
+def delete_document(collection, query):
+    """
+    Deletes a mongodb collection document given a query filter.
+
+    Args:
+        collection (object) - the collection to query
+        query (dictionary) - the mongodb query
+
+    Returns:
+        (dictionary) - the result of the deletion
+    """
+    return collection.delete_one(query)
+    

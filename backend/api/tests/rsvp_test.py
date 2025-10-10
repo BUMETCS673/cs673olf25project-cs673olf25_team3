@@ -121,8 +121,8 @@ class TestRSVPAPI:
         url = reverse("get-rsvp-by-plan-id", kwargs={"plan_id": self.plan_id})
         response = client.get(url)
         
-        assert response.status_code == 404
-        assert response.data["error"] == "RSVP not found"
+        assert response.status_code == 200
+        assert response.data["data"] == []
 
     @patch('api.views.rsvp.rsvp_collection')
     def test_get_rsvp_by_user_id_success(self, mock_collection):
@@ -163,8 +163,8 @@ class TestRSVPAPI:
         url = reverse("get-rsvp-by-user-id")
         response = client.get(url)
         
-        assert response.status_code == 404
-        assert response.data["error"] == "RSVP not found"
+        assert response.status_code == 200
+        assert response.data["data"] == []
 
     @patch('api.views.rsvp.rsvp_collection')
     def test_delete_rsvp_by_id_success(self, mock_collection):
