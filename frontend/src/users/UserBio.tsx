@@ -16,6 +16,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getUserById } from "./endpoints/getUserById";
 import { getProfile } from "./endpoints/getProfile";
+import { Typography } from "@mui/material";
+import {Box} from "@mui/material";
 
 export default function UserBio() {
   const { userId } = useParams<{ userId: string }>();
@@ -63,7 +65,8 @@ export default function UserBio() {
 
   return (
     <div>
-      {initialData && <div>Username: {initialData.username}</div>}
+
+      {initialData &&  <Typography variant="h5" fontWeight={600}>{initialData.username}</Typography>}
       {initialData &&  <div>First Name: {initialData.first_name}</div>}
       {initialData && <div>Last Name: {initialData.last_name}</div>}
       {initialData && <div>Bio: {initialData.bio}</div>}

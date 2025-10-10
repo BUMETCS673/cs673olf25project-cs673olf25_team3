@@ -20,6 +20,10 @@ import { SendFriendRequest } from "./endpoints/sendFriendRequest.js";
 import { DeleteFriend } from "./endpoints/deleteFriend.js";
 import { RespondToFriendRequest } from "./endpoints/respondToFriendRequest.js";
 import { Button } from "@mui/material";
+import {Typography} from "@mui/material";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import {Box} from "@mui/material";
 import UserLink from "../users/UserLink.js";
 
 
@@ -115,42 +119,50 @@ export default function Friends() {
       var listItems;
       if (friends){
           listItems = friends.map(friend =>
-          <li key={friend.id}>
+          <ListItem disablePadding key={friend.id}>
              <UserLink userId={friend.id}>{friend.username}</UserLink>
             <VariantButtons variant={variant} userID={friend.id} requestID={friend.request_id}/>
-          </li>
+          </ListItem>
           )
       }
       return (
-            <ul>{listItems}</ul>
+            <List>{listItems}</List>
         )
     }
 
   
 
   return (
-    <div>
-      <h1>Friends</h1>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: 2,
+          mt: 1,
+        }}
+      >
+      <Typography variant="h5" fontWeight={600}>Friends</Typography>
 
       <div>
-        <h2>Current Friends:</h2>
+        <Typography variant="h7" fontWeight={600}>Current Friends:</Typography>
         <FriendsList friends={friends.friends} variant={"current"}></FriendsList>
       </div>
 
       <div>
-        <h2>Add Friends:</h2>
+        <Typography variant="h7" fontWeight={600}>Add Friends:</Typography>
         <FriendsList friends={unconnectedUsers}  variant={"send"}></FriendsList>
       </div>
 
       <div>
-        <h2>Received Friend Requests:</h2>
+        <Typography variant="h7" fontWeight={600}>Received Friend Requests:</Typography>
         <FriendsList friends={friends.incoming_requests} variant={"receive"}></FriendsList>
       </div>
 
       <div>
-        <h2>Sent Friend Requests:</h2>
+        <Typography variant="h7" fontWeight={600}>Sent Friend Requests:</Typography>
         <FriendsList friends={friends.outgoing_requests} variant={null}></FriendsList>
       </div>
-    </div>
+    </Box>
   );
 }

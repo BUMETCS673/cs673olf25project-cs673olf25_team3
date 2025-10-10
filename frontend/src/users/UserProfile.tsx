@@ -15,7 +15,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getProfile } from "./endpoints/getProfile"
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
+import {Box} from "@mui/material";
 
 export default function UserBio() {
   const { auth } = useAuth();
@@ -49,8 +50,16 @@ export default function UserBio() {
 
 
   return (
-    <div>
-      {initialData && <div>Username: {initialData.username}</div>}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          gap: 2,
+          mt: 1,
+        }}
+      >
+      {initialData &&  <Typography variant="h5" fontWeight={600}>{initialData.username}</Typography>}
       {initialData && <div>Email: {initialData.email}</div>}
       {initialData && <div>First Name: {initialData.first_name}</div>}
       {initialData && <div>Last Name: {initialData.last_name}</div>}
@@ -59,7 +68,7 @@ export default function UserBio() {
       {dateJoined && <div>Date Joined :{dateJoined}</div>}
       <Button onClick={() => {
             navigate('/profile/edit')
-          }}>Edit</Button>
-    </div>
+      }}>Edit</Button>
+    </Box>
   )
 }
