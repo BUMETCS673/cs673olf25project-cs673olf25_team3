@@ -30,7 +30,7 @@ interface FormData {
   bio: string;
 }
 
-export default function AddPlanForm() {
+export default function EditProfile() {
   const navigate = useNavigate();
   const { auth } = useAuth();
 
@@ -81,7 +81,7 @@ export default function AddPlanForm() {
     result = await updateProfile(formData, auth.accessToken);
 
     if (!result.errorMessage) {
-      navigate("/profile"); // redirect to home after success
+        navigate("/profile"); // redirect to home after success
     } else {
       return result.errorMessage;
     }
@@ -111,7 +111,7 @@ export default function AddPlanForm() {
     } else {
       // success
       setErrors({});
-      navigate('/profile')
+      // navigate('/profile')
     }
   };
 
@@ -179,9 +179,6 @@ export default function AddPlanForm() {
           </Button>
           <Button
           variant="outlined"
-          onClick={() => {
-            navigate('/profile')
-          }}
         >
           Cancel
         </Button>

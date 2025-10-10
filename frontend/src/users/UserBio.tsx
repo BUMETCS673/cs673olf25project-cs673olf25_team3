@@ -1,5 +1,5 @@
 /*
-AI-generated: 30% (Tool: ChatGPT; primarily component structure, useEffect skeleton, Box layout, integration of AddPlanForm, usenaviagate's replace)
+AI-generated: 30% (Tool: ChatGPT; primarily component structure, useEffect skeleton, Box layout, usenaviagate's replace)
 Human-written: 70% (logic: conditional fetching of plan data in edit mode, calling getPlanById, handling API errors, integrating addPlan and editPlan endpoints on submit, navigation to /home on success)
 
 Notes:

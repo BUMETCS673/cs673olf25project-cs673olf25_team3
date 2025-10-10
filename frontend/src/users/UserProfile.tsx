@@ -1,5 +1,5 @@
 /*
-AI-generated: 30% (Tool: ChatGPT; primarily component structure, useEffect skeleton, Box layout, integration of AddPlanForm)
+AI-generated: 30% (Tool: ChatGPT; primarily component structure, useEffect skeleton )
 Human-written: 70% (logic: conditional fetching of plan data in edit mode, calling getPlanById, handling API errors, integrating addPlan and editPlan endpoints on submit, navigation to /home on success)
 
 Notes:
@@ -20,6 +20,7 @@ import { Button } from "@mui/material";
 export default function UserBio() {
   const { auth } = useAuth();
   const [initialData, setInitialData] = useState<any>(null);
+  const [dateJoined, setDateJoined] = useState<any>(null)
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -36,6 +37,15 @@ export default function UserBio() {
     }
   }, [auth.accessToken]);
 
+  useEffect(()=>{
+    if (initialData){
+      let newDate = new Date(initialData.date_joined)
+      let formattedDate =  `${newDate.getFullYear()}-${String(newDate.getMonth()).padStart(2, '0')}-${String(newDate.getDate()).padStart(2, '0')}`
+      setDateJoined(formattedDate)
+    }
+    setDateJoined
+  }, [initialData])
+
 
 
   return (
@@ -46,7 +56,7 @@ export default function UserBio() {
       {initialData && <div>Last Name: {initialData.last_name}</div>}
       {initialData && <div>Birthday: {initialData.date_of_birth}</div>}
       {initialData && <div>Bio: {initialData.bio}</div>}
-      {initialData && <div>Date Joined :{initialData.date_joined}</div>}
+      {dateJoined && <div>Date Joined :{dateJoined}</div>}
       <Button onClick={() => {
             navigate('/profile/edit')
           }}>Edit</Button>
