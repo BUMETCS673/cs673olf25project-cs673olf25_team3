@@ -1,10 +1,10 @@
 /*
-AI-generated: 30% (Tool: ChatGPT; primarily component structure, useEffect skeleton, Box layout, integration of AddPlanForm)
+AI-generated: 30% (Tool: ChatGPT; primarily component structure, useEffect skeleton, Box layout, integration of AddPlanForm, usenaviagate's replace)
 Human-written: 70% (logic: conditional fetching of plan data in edit mode, calling getPlanById, handling API errors, integrating addPlan and editPlan endpoints on submit, navigation to /home on success)
 
 Notes:
 
-AI contributed to the structural layout and useEffect setup.
+AI contributed to the structural layout and useEffect setup. AI used to find out how to use useNavigate's replace option.
 
 Human contributions cover all functional logic for data fetching, edit vs add handling, API integration, state management, and navigation.
 
@@ -55,7 +55,7 @@ export default function UserBio() {
 
       useEffect(() => {
         if (userId == profile?.id){
-            navigate("/profile/")
+            navigate("/profile/", { replace: true})
         }
     }, [profile])
 

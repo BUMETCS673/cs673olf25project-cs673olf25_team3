@@ -202,7 +202,7 @@ export default function PlanCard({
           <Box sx={{ mt: 1 }}>
             {rsvpUser.length > 0 ? (
               <Typography variant="body2">
-                <strong>Going:</strong> {rsvpUser.map((user)=>{return (<><UserLink userId={user.userId} children={user.username} /><span className="listSpans">, </span></>)})}
+                <strong>Going:</strong> {rsvpUser.map((user)=>{return (<span key={user.userId}><UserLink userId={user.userId} children={user.username} /><span className="listSpans">, </span></span>)})}
               </Typography>
             ) : (
               <Typography variant="body2" color="text.secondary">
