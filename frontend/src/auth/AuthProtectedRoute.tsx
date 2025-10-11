@@ -18,7 +18,7 @@ interface AuthProtectedRouteProps {
 
 const AuthProtectedRoute = ({ children }: AuthProtectedRouteProps) => {
   const { auth } = useAuth();
-
+    
   // If no access token, redirect to login
   if (!auth.accessToken) {
     return <Navigate to="/login" replace />;

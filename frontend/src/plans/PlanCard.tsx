@@ -29,6 +29,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useAuth } from "../auth/AuthContext";
 import { deletePlan } from "../plans/endpoints/deletePlan";
 import { useNavigate } from "react-router-dom";
+import UserLink from "../users/UserLink";
 import RSVPButton from "./RSVPButton";
 import { getRSVPByPlan } from "../plans/endpoints/handleRSVP";
 import { getUserById } from "../users/endpoints/getUserById";
@@ -50,6 +51,7 @@ interface Plan {
   created_by: string;
   user: {
     username: string;
+    id: string;
   };
   showEdit: boolean;
 }
@@ -68,7 +70,7 @@ export default function PlanCard({
   const [openDelete, setOpenDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [initialRSVP, setInitialRSVP] = useState(false);
-  const [rsvpUsernames, setRsvpUsernames] = useState<string[]>([]);
+  const [rsvpUser, setRsvpUsers] = useState<{username: string, userId: string}[]>([]);
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
@@ -85,11 +87,11 @@ export default function PlanCard({
         const usernames = await Promise.all(
           data.map(async (rsvp) => {
             const userInfo = await getUserById(rsvp.user_id, auth.accessToken as string);
-            return userInfo?.username || null;
+            return {username: userInfo?.username || null, userId: rsvp.user_id};
           })
         );
 
-        setRsvpUsernames(usernames.filter(Boolean));
+        setRsvpUsers(usernames.filter((user)=>user.username));
       }
     };
 
@@ -129,13 +131,14 @@ export default function PlanCard({
 
   return (
     <>
+      <style>{` .listSpans:last-child  { display : none; } `}</style>
       <Card sx={{ mb: 2, borderRadius: 2, boxShadow: 3, width: "80%" }}>
         <CardHeader
           title={plan.title}
           subheader={
             <>
               <Typography variant="subtitle2" color="text.primary">
-                👤 Hosted By: {plan.user?.username || "Unknown User"}
+                👤 Hosted By: <UserLink userId={plan.user?.id || ""}>{plan.user?.username || "Unknown User"}</UserLink>
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {new Date(plan.start_time).toLocaleString()} –{" "}
@@ -197,9 +200,9 @@ export default function PlanCard({
           </Box>
 
           <Box sx={{ mt: 1 }}>
-            {rsvpUsernames.length > 0 ? (
+            {rsvpUser.length > 0 ? (
               <Typography variant="body2">
-                <strong>Going:</strong> {rsvpUsernames.join(", ")}
+                <strong>Going:</strong> {rsvpUser.map((user)=>{return (<span key={user.userId}><UserLink userId={user.userId} children={user.username} /><span className="listSpans">, </span></span>)})}
               </Typography>
             ) : (
               <Typography variant="body2" color="text.secondary">
