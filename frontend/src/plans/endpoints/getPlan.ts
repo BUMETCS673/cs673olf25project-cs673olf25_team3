@@ -13,9 +13,9 @@ import { getUserById } from "../../users/endpoints/getUserById";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-async function getPlans(accessToken: string) {
+async function getPlans(accessToken: string, filter: boolean, userId?: string) {
   try {
-    const response = await fetch(`${baseUrl}/api/plans/`, {
+    const response = await fetch(`${baseUrl}/api/plans/?friends=${filter}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -38,17 +38,26 @@ async function getPlans(accessToken: string) {
 
     const enrichedPlans = await Promise.all(
       data.map(async (plan: any) => {
+        let showEdit = false;
+        let userData = null;
+
         if (plan.created_by) {
-          const userData = await getUserById(plan.created_by, accessToken);
-          if (!userData.errorMessage) {
-            return { ...plan, user: userData };
+          userData = await getUserById(plan.created_by, accessToken);
+
+          if (!userData.errorMessage && userId === plan.created_by) {
+            showEdit = true;
           }
         }
-        return plan;
+
+        return {
+          ...plan,
+          user: userData || null,
+          showEdit,
+        };
       })
     );
 
-    return { data: enrichedPlans, errorMessage: null };
+return { data: enrichedPlans, errorMessage: null };
   } catch (err) {
     return { data: null, errorMessage: "Network error. Please try again." };
   }
