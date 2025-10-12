@@ -34,6 +34,6 @@ class TestPlansAPI:
         
         # Assertion Tests
         assert response.status_code == 201
-        assert "id" in response.data
+        assert "id" in response.data['data']
         assert response.data['data']["title"] == "Game Night"
 
