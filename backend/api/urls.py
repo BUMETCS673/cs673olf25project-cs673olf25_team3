@@ -20,10 +20,9 @@ Notes:
 # AI-generated: 20%
 
 from django.urls import path
-from .views import plans, users, rsvp
+from .views import plans, users, tokens, rsvp
 from .views.friends import send_friend_request, respond_to_friend_request, list_friends, remove_friend
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
 
 # API routes used by the frontend and tests
 urlpatterns = [
@@ -48,17 +47,17 @@ urlpatterns = [
     path('friends/request/<str:user_id>/', send_friend_request, name='send_friend_request'),
     path('friends/respond/<str:request_id>/', respond_to_friend_request, name='respond_to_friend_request'),
     path('friends/', list_friends, name='list_friends'),
-  path('friends/remove/<str:request_id>/', remove_friend, name='remove_friend'),
+    path('friends/remove/<str:request_id>/', remove_friend, name='remove_friend'),
 
     # Plans endpoints
     path('plans/', plans.get_plans, name='get-plans'),
-  path('plans/dismissed', plans.list_dismissed, name='list-dismissed-plans'),
+    path('plans/dismissed', plans.list_dismissed, name='list-dismissed-plans'),
     path('plans/add', plans.create_plan, name='create-plan'),
     path('plans/<str:plan_id>', plans.get_plans_by_id, name='get-plans-by-id'),
     path('plans/<str:plan_id>/edit', plans.update_plan, name='update-plan'),
     path('plans/<str:plan_id>/delete', plans.delete_plan, name='delete-plan'),
-  path('plans/<str:plan_id>/dismiss', plans.dismiss_plan, name='dismiss-plan'),
-  path('plans/<str:plan_id>/undismiss', plans.undismiss_plan, name='undismiss-plan'),
+    path('plans/<str:plan_id>/dismiss', plans.dismiss_plan, name='dismiss-plan'),
+    path('plans/<str:plan_id>/undismiss', plans.undismiss_plan, name='undismiss-plan'),
 
     # RSVP endpoints
     path('rsvp/add', rsvp.create_rsvp, name='create-rsvp'),
