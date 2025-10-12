@@ -5,14 +5,15 @@
 name: Digital Ocean Staging CICD
 
 on:
-  push:
-    branches: [ "development" ]
   pull_request:
     branches: [ "development" ]
+    types: [closed]
+  workflow_dispatch:
 
 jobs:
   # Frontend CI
   frontend-ci:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
 
     defaults:
@@ -37,6 +38,7 @@ jobs:
   
   # Backend CI
   backend-ci:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     environment: development
     
@@ -82,6 +84,7 @@ jobs:
 
   # Frontend Build
   frontend-build:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     needs: frontend-ci
     runs-on: ubuntu-latest
     defaults:
@@ -105,6 +108,7 @@ jobs:
 
   # Backend Build
   backend-build:   
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     needs: backend-ci
     runs-on: ubuntu-latest
     defaults:
@@ -128,6 +132,7 @@ jobs:
   
   # Deploy to Droplet
   deploy:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     needs: [frontend-build, backend-build]
     runs-on: ubuntu-latest
     steps:
