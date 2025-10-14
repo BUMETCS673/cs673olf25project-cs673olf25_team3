@@ -5,11 +5,10 @@
 name: Digital Ocean Staging CICD
 
 on:
-  push:
-    branches: [ "development" ]
   pull_request:
     branches: [ "development" ]
     types: [closed]
+  workflow_dispatch:
 
 jobs:
   # Frontend CI

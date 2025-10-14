@@ -50,6 +50,7 @@ const mockPlan = {
   end_time: "2025-10-10T18:00:00Z",
   created_by: "user1",
   user: { username: "ashley" },
+  showEdit: true,
 };
 
 const renderCard = (props = {}) =>
@@ -77,7 +78,8 @@ describe("PlanCard Component (BDD)", () => {
   it("shows username and time range", () => {
     renderCard();
 
-    expect(screen.getByText(/Hosted By: ashley/i)).toBeInTheDocument();
+    expect(screen.getByText(/Hosted By:/i)).toBeInTheDocument();
+    expect(screen.getByText(/ashley/i)).toBeInTheDocument();
     expect(screen.getByText(/2025/i)).toBeInTheDocument(); // just verifies formatted date rendered
   });
 

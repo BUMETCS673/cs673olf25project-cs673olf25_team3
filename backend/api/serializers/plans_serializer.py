@@ -19,5 +19,15 @@ class PlansSerializer(serializers.Serializer):
     start_time = serializers.DateTimeField()
     end_time = serializers.DateTimeField()
     created_by = serializers.CharField()
+    created_at = serializers.DateTimeField()
     
 
+    def validate(self, data):
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
+
+        if start_time and end_time and start_time >= end_time:
+            raise serializers.ValidationError({
+                "end_time": "End time must be after start time."
+            })
+        return data
