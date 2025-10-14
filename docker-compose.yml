@@ -1,0 +1,36 @@
+# Framework-generated: 0%
+# Human-written: 100%
+# AI-generated: 0% (cors origins)
+
+version: '3.8'
+
+services:
+  planningjam_backend:
+    build: ./backend
+    container_name: planningjam_backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    networks:
+      - planjam-network
+
+  planningjam_frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: planningjam_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: npm run dev -- --host 0.0.0.0
+    networks:
+      - planjam-network
+
+networks:
+  planjam-network:
+    external: true

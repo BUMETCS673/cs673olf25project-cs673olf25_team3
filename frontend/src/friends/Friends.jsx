@@ -1,0 +1,168 @@
+/*
+
+AI-generated: 0%
+From Documentation: 10% (from Button and MUI logic )
+Human-written: 90% (some based on Ashley's work, but mostly my own.)
+
+Notes:
+
+Layout structure and MUI component usage were adapted from documentation examples.
+
+Customizations, styling, and integration with the Logo component are fully human-written.
+
+*/
+
+import { useEffect, useState } from "react";
+import { useAuth } from "../auth/AuthContext";
+import { getUsers } from "./endpoints/getUsers.js";
+import { getFriends } from "./endpoints/getFriends.js";
+import { SendFriendRequest } from "./endpoints/sendFriendRequest.js";
+import { DeleteFriend } from "./endpoints/deleteFriend.js";
+import { RespondToFriendRequest } from "./endpoints/respondToFriendRequest.js";
+import { Button } from "@mui/material";
+import {Typography} from "@mui/material";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import {Box} from "@mui/material";
+import UserLink from "../users/UserLink.js";
+
+
+export default function Friends() {
+
+  const { auth } = useAuth();
+  const [allUsers, setAllUsers] = useState([]);
+  const [unconnectedUsers, setUnconnectedUsers] = useState([])
+  const [friends, setFriends] = useState([]);
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateUsersAndFriends();
+    }, 20000);
+
+    return () => clearInterval(interval);
+  }, [])
+
+    //Load users from API
+  const loadAllUsers = async () => {
+    if (!auth.accessToken) return;
+    const result = await getUsers(auth.accessToken);
+    if (!result.errorMessage) {
+      setAllUsers(result);
+    } else {
+      console.error(result.errorMessage);
+    }
+  };
+
+  const loadFriends = async () => {
+    if (!auth.accessToken) return;
+    const result = await getFriends(auth.accessToken);
+    if (!result.errorMessage) {
+      setFriends(result);
+    } else {
+      console.error(result.errorMessage);
+    }
+  };
+
+  const updateUsersAndFriends =  async () => {
+    setTimeout(() => {
+      loadAllUsers();
+      loadFriends();
+    }, "500");
+    
+  }
+
+  useEffect(() => {
+
+    updateUsersAndFriends();
+  }, [auth.accessToken]);
+
+  useEffect(() => {
+    if (allUsers.length > 0){
+      var filteredUsers = allUsers.slice();
+    
+      var excludedIds = [friends.current_user_id]
+      if (friends.friends){
+        var currentFriendIds = friends.friends.map(friend => friend.id);
+        excludedIds= excludedIds.concat(currentFriendIds)
+      }
+      if (friends.incoming_requests) {
+        var receivedRequestIds = friends.incoming_requests.map(user => user.id);
+        excludedIds = excludedIds.concat(receivedRequestIds)
+      }
+      if (friends.outgoing_requests){
+        var sentRequestIds = friends.outgoing_requests.map(user => user.id);
+        excludedIds =excludedIds.concat(sentRequestIds)
+      }
+      filteredUsers  = filteredUsers.filter((user) => !(excludedIds.includes(user.id)))
+      setUnconnectedUsers(filteredUsers)
+    }
+
+  }, [allUsers, friends])
+
+    function VariantButtons({variant, userID, requestID}){
+
+      switch (variant) {
+      case "current":
+        return <Button onClick={()=>{DeleteFriend(userID, auth.accessToken).then(updateUsersAndFriends(), )}}>Remove</Button>
+      case "receive":
+        return  <><Button onClick={()=>{RespondToFriendRequest(requestID, 'accept', auth.accessToken).then(updateUsersAndFriends(), )}}>Accept</Button><Button onClick={()=>{RespondToFriendRequest(requestID, 'reject', auth.accessToken).then(updateUsersAndFriends(), )}}>Ignore</Button></>
+      case "send":
+        return  <Button onClick={()=>{SendFriendRequest(userID, auth.accessToken).then(updateUsersAndFriends(), )}}>Send</Button>
+      default:
+        return 
+      }
+    }
+
+    function FriendsList({friends, variant}) {
+
+      var listItems;
+      if (friends){
+          listItems = friends.map(friend =>
+          <ListItem disablePadding key={friend.id}>
+             <UserLink userId={friend.id}>{friend.username}</UserLink>
+            <VariantButtons variant={variant} userID={friend.id} requestID={friend.request_id}/>
+          </ListItem>
+          )
+      }
+      return (
+            <List>{listItems}</List>
+        )
+    }
+
+  
+
+  return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: 2,
+          mt: 1,
+        }}
+      >
+      <Typography variant="h5" fontWeight={600}>Friends</Typography>
+
+      <div>
+        <Typography variant="h7" fontWeight={600}>Current Friends:</Typography>
+        <FriendsList friends={friends.friends} variant={"current"}></FriendsList>
+      </div>
+
+      <div>
+        <Typography variant="h7" fontWeight={600}>Add Friends:</Typography>
+        <FriendsList friends={unconnectedUsers}  variant={"send"}></FriendsList>
+      </div>
+
+      <div>
+        <Typography variant="h7" fontWeight={600}>Received Friend Requests:</Typography>
+        <FriendsList friends={friends.incoming_requests} variant={"receive"}></FriendsList>
+      </div>
+
+      <div>
+        <Typography variant="h7" fontWeight={600}>Sent Friend Requests:</Typography>
+        <FriendsList friends={friends.outgoing_requests} variant={null}></FriendsList>
+      </div>
+    </Box>
+  );
+}
